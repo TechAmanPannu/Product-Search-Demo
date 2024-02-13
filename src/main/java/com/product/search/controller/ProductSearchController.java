@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,4 +19,6 @@ public class ProductSearchController {
         return ResponseEntity
                 .ok(productService.getByLiam(liam));
     }
+
+
 }

@@ -3,14 +3,16 @@ package com.product.search.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.math.BigInteger;
+import java.io.Serializable;
 import java.util.UUID;
 
 
 @Data
 @Entity
 @Table(name = "products")
-public class Product {
+public class Product implements Serializable {
+
+    private long serialVersionUID = -8170157170558487083L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

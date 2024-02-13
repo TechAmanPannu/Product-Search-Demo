@@ -4,11 +4,9 @@ import com.product.search.entity.Product;
 import com.product.search.repository.ProductRepository;
 import com.product.search.util.ProductSpecifications;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service

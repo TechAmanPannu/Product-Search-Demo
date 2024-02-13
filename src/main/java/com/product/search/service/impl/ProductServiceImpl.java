@@ -6,7 +6,6 @@ import com.product.search.store.ProductStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
