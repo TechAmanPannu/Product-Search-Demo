@@ -28,6 +28,11 @@ public class SubqueryBuilder {
     }
 
 
+    public SubqueryBuilder offset(String value) {
+        this.query = String.format("%s OFFSET %s", this.query, value);
+        return this;
+    }
+
     public void setQuery(String query) {
         this.query = query;
     }

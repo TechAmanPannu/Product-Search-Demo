@@ -32,12 +32,12 @@ class DemoProductSearchApplicationTests {
                 .where("ah_code", "=", "20348304")
                 .and("mch_code", "=", "354345435")
                 .or("id", "=", "234234234")
-                .build().sortBy("id", "ASC").build().get();
+                .build().sortBy("id", "ASC").offset("0").build().get();
 
 
 
 
-        Assertions.assertEquals("SELECT id,liam FROM  ( SELECT id,liam FROM products WHERE ah_code = '20348304' AND mch_code = '354345435' OR id = '234234234'  ORDER BY id ASC ) AS subquery", subquery);
+        Assertions.assertEquals("SELECT id,liam FROM  ( SELECT id,liam FROM products WHERE ah_code = '20348304' AND mch_code = '354345435' OR id = '234234234'  ORDER BY id ASC OFFSET 0 ) AS subquery", subquery);
 
 // subquery query outside orderby
         String subquery_with_outside_orderBy = new QueryBuilder("products", "id", "liam")
@@ -56,7 +56,7 @@ class DemoProductSearchApplicationTests {
                 .or("id", "=", "234234234")
                 .build().get();
 
-        Assertions.assertEquals("SELECT id,liam FROM products WHERE ah_code = '20348304' AND mch_code = '354345435' OR id = '234234234", joinQuery);
+        Assertions.assertEquals("SELECT id,liam FROM products WHERE ah_code = '20348304' AND mch_code = '354345435' OR id = '234234234'", joinQuery);
 
     }
 
