@@ -22,7 +22,6 @@ public class SubqueryWhereClause  {
     }
 
     public SubqueryBuilder build() {
-        this.query = this.query + ")";
         this.subqueryBuilder.setQuery(this.query);
        return subqueryBuilder;
     }

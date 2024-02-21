@@ -33,8 +33,10 @@ public class SubqueryBuilder {
         return this.query;
     }
 
+
+
     public QueryBuilder build() {
-        this.queryBuilder.setQuery((this.queryBuilder.get() + this.query + " AS subquery").replaceFirst(this.queryBuilder.tableName(), ""));
+        this.queryBuilder.setQuery((this.queryBuilder.get() + this.query + " ) AS subquery").replaceFirst(this.queryBuilder.tableName(), ""));
         return this.queryBuilder;
     }
 
