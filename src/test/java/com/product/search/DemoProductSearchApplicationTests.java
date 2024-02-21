@@ -18,13 +18,13 @@ class DemoProductSearchApplicationTests {
 
         // basic query
         String query = new QueryBuilder("products", "id", "liam")
-                .where("ah_code", "=", "20348304")
+                .where("ah_code", "=", "240769")
                 .and("mch_code", "=", "354345435")
                 .or("id", "=", "234234234")
                 .build().sortBy("id", "ASC").limit("50").get();
 
 
-        Assertions.assertEquals("SELECT id,liam FROM products WHERE ah_code = '20348304' AND mch_code = '354345435' OR id = '234234234'  ORDER BY id ASC LIMIT 50", query);
+        Assertions.assertEquals("SELECT id,liam FROM products WHERE ah_code = '240769' AND mch_code = '354345435' OR id = '234234234'  ORDER BY id ASC LIMIT 50", query);
 
         // subquery query with order by
         String subquery = new QueryBuilder("products", "id", "liam")
@@ -52,15 +52,13 @@ class DemoProductSearchApplicationTests {
 //        join query
         String joinQuery = new QueryBuilder("products", "id", "liam")
                 .joinSubquery("categories", " products.category_id = categories.id ", "products.id", "products.liam")
-                    .where("products.ah_code", "=", "20348304")
-                    .and("products.mch_code", "=", "354345435")
-                    .or("products.id", "=", "234234234")
+                    .where("products.id", ">", "0")
+                    .and("categories.name ->> 'en'", "=", "Vitamin C")
                     .build()
-                    .sortBy("products.id", "ASC")
                     .offset("0")
-                .build().sortBy("id", "ASC").get();
+                .build().sortBy("id", "ASC").limit("50").get();
 
-        Assertions.assertEquals("SELECT id,liam FROM  ( SELECT products.id,products.liam FROM products JOIN categories ON  products.category_id = categories.id WHERE products.ah_code = '20348304' AND products.mch_code = '354345435' OR products.id = '234234234'  ORDER BY products.id ASC OFFSET 0 ) AS subquery ORDER BY subquery.id ASC", joinQuery);
+        Assertions.assertEquals("SELECT id,liam FROM  ( SELECT products.id,products.liam FROM products JOIN categories ON  products.category_id = categories.id WHERE products.id > '0' AND categories.name ->> 'en' = 'Vitamin C'  OFFSET 0 ) AS subquery ORDER BY subquery.id ASC LIMIT 50", joinQuery);
 
     }
 
