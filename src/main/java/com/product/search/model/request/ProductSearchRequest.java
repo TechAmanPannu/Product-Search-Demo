@@ -1,9 +1,15 @@
 package com.product.search.model.request;
 
-import java.io.Serializable;
+import lombok.Data;
 
+import java.io.Serializable;
+import java.util.List;
+
+@Data
 public class ProductSearchRequest implements Serializable {
 
-    private long serialVersionUID = -6530293410250349159L;
+    private static final long serialVersionUID = -6530293410250349159L;
 
+    private boolean allConditionsMatch;
+    private List<ProductSearchCondition> conditions;
 }

@@ -1,10 +1,14 @@
 package com.product.search.service;
 
 import com.product.search.entity.Product;
+import com.product.search.model.request.ProductSearchRequest;
+import com.product.search.model.response.ProductResponseModel;
 
 import java.util.List;
 
 public interface ProductService {
 
-    Product getByLiam(String liam);
+    ProductResponseModel getByLiam(String liam);
+
+    List<ProductResponseModel> search(ProductSearchRequest productSearchRequest);
 }
