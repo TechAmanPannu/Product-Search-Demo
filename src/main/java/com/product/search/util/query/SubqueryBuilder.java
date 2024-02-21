@@ -20,6 +20,8 @@ public class SubqueryBuilder {
         return whereClause;
     }
 
+
+
     public SubqueryBuilder sortBy(String property, String order) {
         this.query = String.format("%s ORDER BY %s %s", this.query, property, order);
         return this;
@@ -32,7 +34,6 @@ public class SubqueryBuilder {
     public String get() {
         return this.query;
     }
-
 
 
     public QueryBuilder build() {
