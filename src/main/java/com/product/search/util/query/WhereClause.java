@@ -6,22 +6,22 @@ public class WhereClause {
 
     protected QueryBuilder queryBuilder;
     private String query;
+
     public WhereClause(QueryBuilder queryBuilder, String property, String operator, String value) {
         this.queryBuilder = queryBuilder;
-        this.query = queryBuilder.get() + "WHERE " + createQuery(property, operator, value);
+        this.query = String.format("%sWHERE %s",this.queryBuilder.get(), createQuery(property, operator, value));
     }
 
 
     public WhereClause and(String property, String operator, String value) {
-        query = query + "AND " + createQuery(property, operator, value);
+        query = String.format("%sAND %s",this.query, createQuery(property, operator, value));
         return this;
     }
 
     public WhereClause or(String property, String operator, String value) {
-        query = query + "OR " + createQuery(property, operator, value);
+        query = String.format("%sOR %s",this.query, createQuery(property, operator, value));
         return this;
     }
-
 
 
     public QueryBuilder build() {
