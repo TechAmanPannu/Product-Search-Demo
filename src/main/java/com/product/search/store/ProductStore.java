@@ -1,6 +1,7 @@
 package com.product.search.store;
 
 import com.product.search.entity.Product;
+import com.product.search.enums.ProductSearchProperty;
 import com.product.search.model.request.ProductSearchCondition;
 import com.product.search.model.request.ProductSearchRequest;
 import com.product.search.repository.ProductRepository;
@@ -35,10 +36,10 @@ public class ProductStore {
         Specification<Product> specification = null;
         for (ProductSearchCondition condition : productSearchRequest.getConditions()) {
             if (specification == null) {
-                specification = ProductSpecifications.with(condition.getProperty(), condition.getOperator(), condition.getValue());
+                specification = ProductSpecifications.with(condition.getProperty().getColumnName(), condition.getProperty().getOperator(condition.getOperator()), condition.getValue());
             } else {
                 specification = specification.
-                        and(ProductSpecifications.with(condition.getProperty(), condition.getOperator(), condition.getValue()));
+                        and(ProductSpecifications.with(condition.getProperty().getColumnName(), condition.getProperty().getOperator(condition.getOperator()), condition.getValue()));
             }
         }
         return productRepository.findAll(specification, Pageable.ofSize(50));

@@ -19,6 +19,23 @@ public class SubqueryWhereClause  {
         return this;
     }
 
+    public SubqueryWhereClause and(String property, String operator, List<String> values) {
+        this.query = String.format("%sAND %s", this.query, createORQuery(property, operator, values));
+        return this;
+    }
+
+
+
+    public SubqueryWhereClause or(String property, String operator, String value) {
+        this.query = String.format("%sOR %s",this.query, createQuery(property, operator, value));
+        return this;
+    }
+
+    public SubqueryWhereClause or(String property, String operator, List<String> values) {
+        this.query = String.format("%sOR %s", this.query, createORQuery(property, operator, values));
+        return this;
+    }
+
     public SubqueryWhereClause andDietary(String operator, List<String> values) {
         this.query = String.format("%sAND (jsonb_to_tsvector('english', enrichment -> 'dietary_callouts', '[\"string\"]') %s to_tsquery('%s') OR " +
                 "((enrichment -> 'dietary_callouts' = '[]' OR enrichment -> 'dietary_callouts'= 'null') " +
@@ -31,22 +48,6 @@ public class SubqueryWhereClause  {
         this.query = String.format("%sOR (jsonb_to_tsvector('english', enrichment -> 'dietary_callouts', '[\"string\"]') %s to_tsquery('%s') OR " +
                 "((enrichment -> 'dietary_callouts' = '[]' OR enrichment -> 'dietary_callouts'= 'null') " +
                 "AND jsonb_to_tsvector('english', data -> 'dietary_callouts', '[\"string\"]') %s to_tsquery('%s') ))",this.query, operator, join("|", values), operator, join("|", values));
-        return this;
-    }
-
-
-    public SubqueryWhereClause or(String property, String operator, String value) {
-        this.query = String.format("%sOR %s",this.query, createQuery(property, operator, value));
-        return this;
-    }
-
-    public SubqueryWhereClause or(String condition) {
-        this.query = String.format("%sOR %s",this.query, condition);
-        return this;
-    }
-
-    public SubqueryWhereClause and(String condition) {
-        this.query = String.format("%sAND %s",this.query, condition);
         return this;
     }
 

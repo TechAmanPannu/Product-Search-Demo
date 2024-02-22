@@ -33,6 +33,11 @@ public class WhereClause {
         return this;
     }
 
+    public WhereClause or(String property, String operator, List<String> values) {
+        query = String.format("%sOR %s", this.query, createORQuery(property, operator, values));
+        return this;
+    }
+
 
     public QueryBuilder build() {
         this.queryBuilder.setQuery(this.query + " )");

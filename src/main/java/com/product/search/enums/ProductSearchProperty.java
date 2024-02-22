@@ -1,47 +1,84 @@
-/*
 
 package com.product.search.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.product.search.entity.QProduct;
 import com.querydsl.core.types.dsl.StringPath;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public enum ProductSearchProperty {
 
-    BRAND("products", List.of("brand_code"), false, false),
-    PRODUCT_COLOR("products", List.of("variant_data.color.en"), true, false),
-    PRODUCT_CATEGORY("categories", List.of("name.en"), false, true, "products"),
-//    SKIN_CONCERN("products", List.of("enrichment.specifications.code.concern"), true, false),
-//    DIETARY("products", List.of("enrichment.dietary_callouts", "data.dietary_callouts"), true, ),
 
-    AH_CODE("products", List.of("brand_code"), false, false),
-    MCH_CODE("products", List.of("brand_code"), false, false);
+    BRAND_CODE("brandCode","products", "brand_code", new HashMap<ProductSearchOperator, String>() {{
+        put(ProductSearchOperator.EQ, "=");
+        put(ProductSearchOperator.CONTAINS, "=");
+    }}),
 
+    AH_CODE("ahCode","products", "ah_code", new HashMap<ProductSearchOperator, String>() {{
+        put(ProductSearchOperator.EQ, "=");
+        put(ProductSearchOperator.CONTAINS, "=");
+    }}),
+    MCH_CODE("mchCode","products", "mch_code", new HashMap<ProductSearchOperator, String>() {{
+        put(ProductSearchOperator.EQ, "=");
+        put(ProductSearchOperator.CONTAINS, "=");
+    }}),
+    PRODUCT_COLOR("productColor","products", "variant_data -> 'color' ->> 'en'", new HashMap<ProductSearchOperator, String>() {{
+        put(ProductSearchOperator.EQ, "=");
+        put(ProductSearchOperator.CONTAINS, "=");
+    }}),
+    PRODUCT_CATEGORY_NAME("ProductCategoryName", "categories", "name ->> 'en'", new HashMap<ProductSearchOperator, String>() {{
+        put(ProductSearchOperator.EQ, "=");
+        put(ProductSearchOperator.CONTAINS, "=");
+    }}),
+
+    DIETARY("dietary","products", "enrichment -> 'dietary_callouts'", new HashMap<ProductSearchOperator, String>() {{
+        put(ProductSearchOperator.EQ, "=");
+        put(ProductSearchOperator.CONTAINS, "@@");
+    }} ),
+
+    SKIN_CONCERN("skinConcern","products", "enrichment -> 'specifications'::text -> 'code'::text -> 'concern'::text", null);
+
+
+
+
+    private String value;
     private String tableName;
-    private List<String> fieldNames;
+    private String columnName;
+    private Map<ProductSearchOperator, String> searchOperatorMappings;
 
-    private boolean isVectorIndexCreated;
 
-    private boolean isJoinRequired;
-
-    private String  joinWithTableName;
-
-    private StringPath path;
-
-    ProductSearchProperty(String tableName, List<String> fieldNames, boolean isVectorIndexCreated, boolean isJoinRequired, String joinWithTableName) {
-        this(tableName, fieldNames, isVectorIndexCreated, isJoinRequired);
-        this.joinWithTableName = joinWithTableName;
+    ProductSearchProperty(String value, String tableName, String columnName, Map<ProductSearchOperator, String> searchOperatorMappings) {
+        this.value = value;
+        this.tableName = tableName;
+        this.columnName = columnName;
+        this.searchOperatorMappings = searchOperatorMappings;
 
     }
 
-    ProductSearchProperty(String tableName, StringPath path, boolean isVectorIndexCreated, boolean isJoinRequired) {
-        this.tableName = tableName;
-        this.isVectorIndexCreated = isVectorIndexCreated;
-        this.isJoinRequired = isJoinRequired;
+    @JsonCreator
+    public ProductSearchProperty from(String value) {
+        if(value == null || value.isEmpty()) {
+            return null;
+        }
+        for (ProductSearchProperty productSearchProperty : ProductSearchProperty.values()) {
+            if(productSearchProperty.value.equalsIgnoreCase(value)) {
+                return productSearchProperty;
+            }
+        }
+        return null;
+    }
 
+
+    public String getColumnName() {
+        return this.columnName;
+    }
+
+    public String getOperator(ProductSearchOperator productSearchOperator) {
+        return this.searchOperatorMappings.get(productSearchOperator);
     }
 
 }
 
-*/
