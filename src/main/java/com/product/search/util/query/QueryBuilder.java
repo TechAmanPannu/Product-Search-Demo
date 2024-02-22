@@ -1,5 +1,8 @@
 package com.product.search.util.query;
 
+import static com.product.search.util.query.QueryConstants.NEXT_PAGE_PATTERN;
+import static com.product.search.util.query.QueryConstants.SUBQUERY_LITERAL;
+import static com.product.search.util.query.QueryUtils.createQuery;
 import static com.product.search.util.query.QueryUtils.join;
 
 public class QueryBuilder {
@@ -8,7 +11,7 @@ public class QueryBuilder {
     private String[] columns;
     private String query;
     private boolean isJoinSubqueryQuery;
-    public static final String SUBQUERY_LITERAL = "subquery";
+    private String nextPage;
 
 
     public QueryBuilder(String query) {
@@ -28,7 +31,7 @@ public class QueryBuilder {
         return whereClause;
     }
 
-    public SubqueryBuilder subquery(String tableName, String... columns) {
+    public SubqueryBuilder subquery() {
         return new SubqueryBuilder(this, tableName, columns);
     }
 
@@ -48,8 +51,18 @@ public class QueryBuilder {
         return this;
     }
 
+    public QueryBuilder nextPage(String property, String value) {
+        this.nextPage = String.format("%s AND", createQuery(property, ">", value));
+        return this;
+    }
+
 
     public String get() {
+        if (nextPage != null && !nextPage.isEmpty()) {
+            this.query = this.query.replaceFirst(NEXT_PAGE_PATTERN, this.nextPage);
+        } else {
+            this.query = this.query.replaceFirst(NEXT_PAGE_PATTERN, "");
+        }
         return this.query;
     }
 

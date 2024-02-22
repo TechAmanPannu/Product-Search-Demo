@@ -1,7 +1,10 @@
 package com.product.search.util.query;
 
 
-import static com.product.search.util.query.QueryBuilder.SUBQUERY_LITERAL;
+
+import static com.product.search.util.query.QueryConstants.NEXT_PAGE_PATTERN;
+import static com.product.search.util.query.QueryConstants.SUBQUERY_LITERAL;
+import static com.product.search.util.query.QueryUtils.createQuery;
 import static com.product.search.util.query.QueryUtils.join;
 
 public class SubqueryBuilder {
@@ -9,6 +12,7 @@ public class SubqueryBuilder {
     private QueryBuilder queryBuilder;
     private String query;
 
+    private String nextPage;
 
     public SubqueryBuilder(QueryBuilder builder, String tableName, String[] columns) {
         this(builder, tableName, null, columns, false);
@@ -39,6 +43,11 @@ public class SubqueryBuilder {
         return this;
     }
 
+    public SubqueryBuilder nextPage(String property, String value) {
+        this.nextPage = String.format("%s AND", createQuery(property, ">", value));
+        return this;
+    }
+
     public void setQuery(String query) {
         this.query = query;
     }
@@ -49,8 +58,15 @@ public class SubqueryBuilder {
 
 
     public QueryBuilder build() {
-        this.queryBuilder.setQuery(String.format("%s%s ) AS %s", this.queryBuilder.get(),this.query, SUBQUERY_LITERAL).replaceFirst(this.queryBuilder.tableName(), ""));
+        String tempQuery = String.format("%s%s ) AS %s", this.queryBuilder.get(), this.query, SUBQUERY_LITERAL).replaceFirst(this.queryBuilder.tableName(), "");
+        if (nextPage != null && !nextPage.isEmpty()) {
+            tempQuery = tempQuery.replaceFirst(NEXT_PAGE_PATTERN, this.nextPage);
+        } else {
+            tempQuery = tempQuery.replaceFirst(NEXT_PAGE_PATTERN, "");
+        }
+        this.queryBuilder.setQuery(tempQuery);
         return this.queryBuilder;
     }
+
 
 }
