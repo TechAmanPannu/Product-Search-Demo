@@ -16,9 +16,6 @@ public class QueryBuilder {
     private String nextPage;
 
 
-    public QueryBuilder(String query) {
-        this.query = query;
-    }
 
     public QueryBuilder(String tableName, String... columns) {
         this.query = String.format("SELECT %s FROM %s ", join(",", columns), tableName);

@@ -181,7 +181,7 @@ public class QueryBuilderTests {
     }
 
     @Test
-    @DisplayName("Given : basic AND subquery with ah_code, mch_code and brand_code with EQ operator with optimization fence, nextpage within subquery When: query is generated with combination, Then: SQL native query should return")
+    @DisplayName("Given : basic AND subquery with ah_code, mch_code and brand_code with EQ operator with optimization fence, nextpage, order by within subquery When: query is generated with combination, Then: SQL native query should return")
     public void testBasicSubQuery5() {
 
         QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam", "ah_code", "mch_code", "brand_code")
@@ -189,9 +189,9 @@ public class QueryBuilderTests {
                 .where("ah_code", "=", singleQuote("240434"))
                 .and("mch_code", "=", singleQuote("M10210301"))
                 .and("brand_code", "=", singleQuote("AMP"))
-                .build().offset("0").nextPage("id", "0").build();
+                .build().sortBy("id", "ASC").offset("0").nextPage("id", "0").build();
 
-        Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM  ( SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE id > 0  AND ( ah_code = '240434' AND mch_code = 'M10210301' AND brand_code = 'AMP'  ) OFFSET 0 ) AS subquery", queryBuilder.get());
+        Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM  ( SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE id > 0  AND ( ah_code = '240434' AND mch_code = 'M10210301' AND brand_code = 'AMP'  ) ORDER BY id ASC OFFSET 0 ) AS subquery", queryBuilder.get());
 
     }
 

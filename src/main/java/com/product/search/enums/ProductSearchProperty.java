@@ -2,11 +2,9 @@
 package com.product.search.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.product.search.entity.QProduct;
-import com.querydsl.core.types.dsl.StringPath;
 
 import java.util.HashMap;
-import java.util.List;
+
 import java.util.Map;
 
 public enum ProductSearchProperty {

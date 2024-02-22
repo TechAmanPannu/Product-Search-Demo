@@ -1,13 +1,11 @@
 package com.product.search.controller;
 
-import com.product.search.entity.Product;
 import com.product.search.model.request.ProductSearchRequest;
 import com.product.search.model.response.ProductResponseModel;
 import com.product.search.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/products")
-public class ProductSearchController {
+public class TestProductSearchController {
 
     private final ProductService productService;
 

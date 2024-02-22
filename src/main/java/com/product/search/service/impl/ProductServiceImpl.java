@@ -31,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
         if (productSearchRequest == null || productSearchRequest.getConditions() == null || productSearchRequest.getConditions().isEmpty()) {
             return List.of();
         }
-        return productStore.searchProductsWithQuery(productSearchRequest)
+        return productStore.searchProducts(productSearchRequest)
                 .stream()
                 .map(ProductResponseModel::of)
                 .collect(Collectors.toList());
