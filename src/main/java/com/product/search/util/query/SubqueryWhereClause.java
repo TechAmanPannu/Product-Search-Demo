@@ -14,6 +14,11 @@ public class SubqueryWhereClause  {
         this.query =  String.format("%sWHERE %s ( %s", this.subqueryBuilder.get(), NEXT_PAGE_PATTERN, createQuery(property, operator, value));
     }
 
+    public SubqueryWhereClause( SubqueryBuilder subqueryBuilder,  String property, String operator, List<String> values) {
+        this.subqueryBuilder = subqueryBuilder;
+        this.query =  String.format("%sWHERE %s ( %s", this.subqueryBuilder.get(), NEXT_PAGE_PATTERN, createORQuery(property, operator, values));
+    }
+
     public SubqueryWhereClause and(String property, String operator, String value) {
         this.query = String.format("%sAND %s",this.query, createQuery(property, operator, value));
         return this;

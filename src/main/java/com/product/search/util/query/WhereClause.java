@@ -17,6 +17,11 @@ public class WhereClause {
         this.query = String.format("%sWHERE %s ( %s", this.queryBuilder.get(), NEXT_PAGE_PATTERN, createQuery(property, operator, value));
     }
 
+    public WhereClause(QueryBuilder queryBuilder, String property, String operator, List<String> values) {
+        this.queryBuilder = queryBuilder;
+        this.query = String.format("%sWHERE %s ( %s", this.queryBuilder.get(), NEXT_PAGE_PATTERN, createORQuery(property, operator, values));
+    }
+
     public WhereClause and(String property, String operator, String value) {
         query = String.format("%sAND %s", this.query, createQuery(property, operator, value));
         return this;

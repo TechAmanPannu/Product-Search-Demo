@@ -1,5 +1,7 @@
 package com.product.search.util.query;
 
+import java.util.List;
+
 import static com.product.search.util.query.QueryConstants.NEXT_PAGE_PATTERN;
 import static com.product.search.util.query.QueryConstants.SUBQUERY_LITERAL;
 import static com.product.search.util.query.QueryUtils.createQuery;
@@ -27,6 +29,12 @@ public class QueryBuilder {
 
     public WhereClause where(String property, String operator, String value) {
         WhereClause whereClause = new WhereClause(this, property, operator, value);
+        this.query = query + whereClause.build().get();
+        return whereClause;
+    }
+
+    public WhereClause where(String property, String operator, List<String> values) {
+        WhereClause whereClause = new WhereClause(this, property, operator, values);
         this.query = query + whereClause.build().get();
         return whereClause;
     }

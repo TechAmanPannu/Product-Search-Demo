@@ -10,6 +10,31 @@ import static com.product.search.util.query.QueryUtils.singleQuote;
 
 public class QueryBuilderTests {
 
+
+    @Test
+    @DisplayName("Given : brand_code with EQ operator, When: query is generated with combination, Then: SQL native query should return")
+    public void testBasicQuery0() {
+
+        QueryBuilder queryBuilder = new QueryBuilder("products",  "brand_code")
+                .where("brand_code", "=", singleQuote("AMP"))
+                .build();
+
+        Assertions.assertEquals("SELECT brand_code FROM products WHERE  ( brand_code = 'AMP'  )", queryBuilder.get());
+
+    }
+
+    @Test
+    @DisplayName("Given : brand_code with EQ operator with multiple values, When: query is generated with combination, Then: SQL native query should return")
+    public void testBasicQuery00() {
+
+        QueryBuilder queryBuilder = new QueryBuilder("products", "brand_code")
+                .where("brand_code", "=", List.of(singleQuote("AMP"), singleQuote("GTRD")))
+                .build();
+
+        Assertions.assertEquals("SELECT brand_code FROM products WHERE  (  ( brand_code = 'AMP' OR brand_code = 'GTRD'  )  )", queryBuilder.get());
+
+    }
+
     @Test
     @DisplayName("Given : basic AND query with ah_code, mch_code and brand_code with EQ operator, When: query is generated with combination, Then: SQL native query should return")
     public void testBasicQuery1() {
@@ -23,6 +48,8 @@ public class QueryBuilderTests {
         Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE  ( ah_code = '240434' AND mch_code = 'M10210301' AND brand_code = 'AMP'  )", queryBuilder.get());
 
     }
+
+
     @Test
     @DisplayName("Given : basic AND query with ah_code, mch_code and brand_code with EQ operator, nextpage, order by and limit, When: query is generated with combination, Then: SQL native query should return")
     public void testBasicQuery2() {
@@ -225,6 +252,32 @@ public class QueryBuilderTests {
                 .build().offset("0").nextPage("id", "0").build();
 
         Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM  ( SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE id > 0  AND ( ah_code = '240434' OR  ( mch_code = 'M10210301' OR mch_code = 'M10210302'  ) OR  ( brand_code = 'AMP' OR brand_code = 'GTRD'  )  ) OFFSET 0 ) AS subquery", queryBuilder.get());
+
+    }
+
+    @Test
+    @DisplayName("Given : subquery with brand_code with EQ operator, When: query is generated with combination, Then: SQL native query should return")
+    public void testBasicSubQuery10() {
+
+        QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam", "ah_code", "mch_code", "brand_code")
+                .subquery()
+                .where("brand_code", "=", singleQuote("AMP"))
+                .build().build();
+
+        Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM  ( SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE  ( brand_code = 'AMP'  ) ) AS subquery", queryBuilder.get());
+
+    }
+
+    @Test
+    @DisplayName("Given : subquery with brand_code with EQ operator with multiple values, When: query is generated with combination, Then: SQL native query should return")
+    public void testBasicSubQuery11() {
+
+        QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam", "ah_code", "mch_code", "brand_code")
+                .subquery()
+                .where("brand_code", "=", List.of(singleQuote("AMP"), singleQuote("GTRD")))
+                .build().build();
+
+        Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM  ( SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE  (  ( brand_code = 'AMP' OR brand_code = 'GTRD'  )  ) ) AS subquery", queryBuilder.get());
 
     }
 
