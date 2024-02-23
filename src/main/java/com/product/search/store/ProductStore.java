@@ -11,9 +11,6 @@ import com.product.search.util.query.QueryBuilder;
 import com.product.search.util.query.SubqueryWhereClause;
 import com.product.search.util.query.WhereClause;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -29,9 +26,9 @@ public class ProductStore {
     private final ProductRepository productRepository;
     private final EntityManager entityManager;
 
-    private static final String[] COLUMNS = {"id", "liam"};
+    private static final String[] QUERY_COLUMNS = {"id", "liam"};
 
-    private static final String[] JOIN_COLUMNS = {"products.id", "products.liam"};
+    private static final String[] JOIN_QUERY_COLUMNS = {"products.id", "products.liam"};
 
     private static final String PRODUCT_TABLE_NAME = "products";
 
@@ -65,9 +62,8 @@ public class ProductStore {
     }
 
     private String getSearchQuery(ProductSearchRequest productSearchRequest, Integer limit, String nextPageCursor) {
-        QueryBuilder queryBuilder = new QueryBuilder(PRODUCT_TABLE_NAME, COLUMNS);
+        QueryBuilder queryBuilder = new QueryBuilder(PRODUCT_TABLE_NAME, QUERY_COLUMNS);
         ProductSearchQueryType queryType = getQueryType(productSearchRequest);
-        System.out.println(queryType);
         switch (queryType) {
             case JOIN_QUERY:
                 return getJoinQuery(productSearchRequest, limit, nextPageCursor, queryBuilder);
@@ -97,7 +93,7 @@ public class ProductStore {
 
     private String getJoinQuery(ProductSearchRequest productSearchRequest, Integer limit, String nextPageCursor, QueryBuilder queryBuilder) {
         List<ProductSearchCondition> conditions = productSearchRequest.getConditions();
-        SubqueryWhereClause whereClause = queryBuilder.joinSubquery(CATEGORY_TABLE_NAME, PRODUCTS_AND_CATEGORIES_ON_JOIN_EXP, JOIN_COLUMNS).
+        SubqueryWhereClause whereClause = queryBuilder.joinSubquery(CATEGORY_TABLE_NAME, PRODUCTS_AND_CATEGORIES_ON_JOIN_EXP, JOIN_QUERY_COLUMNS).
                 where(conditions.get(0).getProperty().getColumnName(), conditions.get(0).getProperty().getOperator(conditions.get(0).getOperator()), singleQuote(conditions.get(0).getValue()));
         whereClause = productSearchRequest.isAllConditionsMatch() ? getAllConditionsMatched(whereClause, conditions, true) : getAllConditionsNonMatched(whereClause, conditions, true);
         return whereClause.build().offset(PERFORMANCE_FENCE_OFFSET_VALUE).nextPage(JOIN_QUERY_NEXT_PAGE_PROPERTY, nextPageCursor).build().sortBy(ORDER_BY_AND_NEXT_PAGE_PROPERTY, ORDER_BY).limit(limit.toString()).get();
