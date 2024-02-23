@@ -10,34 +10,41 @@ public class SubqueryWhereClause {
     private String query;
     private SubqueryBuilder subqueryBuilder;
 
+    private boolean whereWithoutCondition;
+
+    public SubqueryWhereClause(SubqueryBuilder subqueryBuilder, boolean whereWithoutCondition) {
+        this.subqueryBuilder = subqueryBuilder;
+        this.whereWithoutCondition = whereWithoutCondition;
+        this.query = String.format("%sWHERE %s ( ", this.subqueryBuilder.get(), NEXT_PAGE_PATTERN);
+    }
     public SubqueryWhereClause(SubqueryBuilder subqueryBuilder, String property, String operator, String value) {
         this.subqueryBuilder = subqueryBuilder;
-        this.query = String.format("%sWHERE %s ( %s", this.subqueryBuilder.get(), NEXT_PAGE_PATTERN, createQuery(property, operator, value));
+        this.query = String.format("%sWHERE %s ( %s", this.subqueryBuilder.get(), NEXT_PAGE_PATTERN, createCondition(property, operator, value));
     }
 
     public SubqueryWhereClause(SubqueryBuilder subqueryBuilder, String property, String operator, List<String> values) {
         this.subqueryBuilder = subqueryBuilder;
-        this.query = String.format("%sWHERE %s ( %s", this.subqueryBuilder.get(), NEXT_PAGE_PATTERN, createORQuery(property, operator, values));
+        this.query = String.format("%sWHERE %s ( %s", this.subqueryBuilder.get(), NEXT_PAGE_PATTERN, createOrCondition(property, operator, values));
     }
 
     public SubqueryWhereClause and(String property, String operator, String value) {
-        this.query = String.format("%sAND %s", this.query, createQuery(property, operator, value));
+        this.query = String.format("%sAND %s", this.query, createCondition(property, operator, value));
         return this;
     }
 
     public SubqueryWhereClause and(String property, String operator, List<String> values) {
-        this.query = String.format("%sAND %s", this.query, createORQuery(property, operator, values));
+        this.query = String.format("%sAND %s", this.query, createOrCondition(property, operator, values));
         return this;
     }
 
 
     public SubqueryWhereClause or(String property, String operator, String value) {
-        this.query = String.format("%sOR %s", this.query, createQuery(property, operator, value));
+        this.query = String.format("%sOR %s", this.query, createCondition(property, operator, value));
         return this;
     }
 
     public SubqueryWhereClause or(String property, String operator, List<String> values) {
-        this.query = String.format("%sOR %s", this.query, createORQuery(property, operator, values));
+        this.query = String.format("%sOR %s", this.query, createOrCondition(property, operator, values));
         return this;
     }
 
@@ -57,7 +64,13 @@ public class SubqueryWhereClause {
 
 
     public SubqueryBuilder build() {
-        this.subqueryBuilder.setQuery(this.query + " )");
+        if(whereWithoutCondition) {
+            this.query = this.query.replaceFirst("\\( AND", "(");
+            this.query = this.query.replaceFirst("\\( OR", "(");
+        }
+
+        this.query = this.query + " )";
+        this.subqueryBuilder.setQuery(this.query);
         return subqueryBuilder;
     }
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 import static com.product.search.util.query.QueryConstants.NEXT_PAGE_PATTERN;
 import static com.product.search.util.query.QueryConstants.SUBQUERY_LITERAL;
-import static com.product.search.util.query.QueryUtils.createQuery;
+import static com.product.search.util.query.QueryUtils.createCondition;
 import static com.product.search.util.query.QueryUtils.join;
 
 public class SubqueryBuilder {
@@ -30,6 +30,12 @@ public class SubqueryBuilder {
                 : String.format("( SELECT %s FROM %s ", join(",", builder.columns()), builder.tableName());
     }
 
+    public SubqueryWhereClause where() {
+        SubqueryWhereClause whereClause = new SubqueryWhereClause(this, true);
+        this.query = this.query + whereClause.get();
+        return whereClause;
+    }
+
     public SubqueryWhereClause where(String property, String operator, String value) {
         SubqueryWhereClause whereClause = new SubqueryWhereClause(this, property, operator, value);
         this.query = this.query + whereClause.get();
@@ -41,9 +47,6 @@ public class SubqueryBuilder {
         this.query = this.query + whereClause.get();
         return whereClause;
     }
-
-
-
 
     public SubqueryBuilder sortBy(String property, String order) {
         this.query = String.format("%s ORDER BY %s %s", this.query, property, order);
@@ -57,7 +60,7 @@ public class SubqueryBuilder {
     }
 
     public SubqueryBuilder nextPage(String property, String value) {
-        this.nextPage = String.format("%s AND", createQuery(property, ">", value));
+        this.nextPage = String.format("%s AND", createCondition(property, ">", value));
         return this;
     }
 

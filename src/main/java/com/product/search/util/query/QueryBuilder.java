@@ -4,7 +4,7 @@ import java.util.List;
 
 import static com.product.search.util.query.QueryConstants.NEXT_PAGE_PATTERN;
 import static com.product.search.util.query.QueryConstants.SUBQUERY_LITERAL;
-import static com.product.search.util.query.QueryUtils.createQuery;
+import static com.product.search.util.query.QueryUtils.createCondition;
 import static com.product.search.util.query.QueryUtils.join;
 
 public class QueryBuilder {
@@ -29,6 +29,12 @@ public class QueryBuilder {
 
     public WhereClause where(String property, String operator, String value) {
         WhereClause whereClause = new WhereClause(this, property, operator, value);
+        this.query = query + whereClause.build().get();
+        return whereClause;
+    }
+
+    public WhereClause where() {
+        WhereClause whereClause = new WhereClause(this, true);
         this.query = query + whereClause.build().get();
         return whereClause;
     }
@@ -64,7 +70,7 @@ public class QueryBuilder {
     }
 
     public QueryBuilder nextPage(String property, String value) {
-        this.nextPage = String.format("%s AND", createQuery(property, ">", value));
+        this.nextPage = String.format("%s AND", createCondition(property, ">", value));
         return this;
     }
 

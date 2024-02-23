@@ -115,12 +115,43 @@ public class QueryBuilderTests {
         public void testBasicQuery6() {
 
             QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam", "ah_code", "mch_code", "brand_code")
-                    .where("ah_code", "=", singleQuote("240434"))
+                    .where()
+                    .or("ah_code", "=", singleQuote("240434"))
                     .or("mch_code", "=", List.of(singleQuote("M10210301"), singleQuote("M10210302")))
                     .or("brand_code", "=", List.of(singleQuote("AMP"), singleQuote("GTRD")))
                     .build().nextPage("id", "0").sortBy("id", "ASC").limit("50");
 
             Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE id > 0  AND ( ah_code = '240434' OR  ( mch_code = 'M10210301' OR mch_code = 'M10210302'  ) OR  ( brand_code = 'AMP' OR brand_code = 'GTRD'  )  ) ORDER BY id ASC LIMIT 50", queryBuilder.get());
+
+        }
+
+        @Test
+        @DisplayName("Given : basic OR query with where(), ah_code, mch_code and brand_code with EQ operator containing multiple values, nextpage, order by and limit, When: query is generated with combination, Then: SQL native query should return")
+        public void testBasicQuery7() {
+
+            QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam", "ah_code", "mch_code", "brand_code")
+                    .where()
+                    .or("ah_code", "=", singleQuote("240434"))
+                    .or("mch_code", "=", List.of(singleQuote("M10210301"), singleQuote("M10210302")))
+                    .or("brand_code", "=", List.of(singleQuote("AMP"), singleQuote("GTRD")))
+                    .build().nextPage("id", "0").sortBy("id", "ASC").limit("50");
+
+            Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE id > 0  AND ( ah_code = '240434' OR  ( mch_code = 'M10210301' OR mch_code = 'M10210302'  ) OR  ( brand_code = 'AMP' OR brand_code = 'GTRD'  )  ) ORDER BY id ASC LIMIT 50", queryBuilder.get());
+
+        }
+
+        @Test
+        @DisplayName("Given : basic AND query with where(), ah_code, mch_code and brand_code with EQ operator containing multiple values, nextpage, order by and limit, When: query is generated with combination, Then: SQL native query should return")
+        public void testBasicQuery8() {
+
+            QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam", "ah_code", "mch_code", "brand_code")
+                    .where()
+                    .and("ah_code", "=", singleQuote("240434"))
+                    .and("mch_code", "=", List.of(singleQuote("M10210301"), singleQuote("M10210302")))
+                    .and("brand_code", "=", List.of(singleQuote("AMP"), singleQuote("GTRD")))
+                    .build().nextPage("id", "0").sortBy("id", "ASC").limit("50");
+
+            Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE id > 0  AND ( ah_code = '240434' AND  ( mch_code = 'M10210301' OR mch_code = 'M10210302'  ) AND  ( brand_code = 'AMP' OR brand_code = 'GTRD'  )  ) ORDER BY id ASC LIMIT 50", queryBuilder.get());
 
         }
     }
@@ -135,7 +166,8 @@ public class QueryBuilderTests {
 
             QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam", "ah_code", "mch_code", "brand_code")
                     .subquery()
-                    .where("ah_code", "=", singleQuote("240434"))
+                    .where()
+                    .and("ah_code", "=", singleQuote("240434"))
                     .and("mch_code", "=", singleQuote("M10210301"))
                     .and("brand_code", "=", singleQuote("AMP"))
                     .build().build();
@@ -334,7 +366,8 @@ public class QueryBuilderTests {
 
             QueryBuilder queryBuilder = new QueryBuilder("products", "id, liam")
                     .joinSubquery("categories", "products.category_id = categories.id", "products.id", "products.liam")
-                    .where("brand_code", "=", singleQuote("AMP"))
+                    .where()
+                    .and("brand_code", "=", singleQuote("AMP"))
                     .build().build();
 
             Assertions.assertEquals("SELECT id, liam FROM  ( SELECT products.id,products.liam FROM products JOIN categories ON products.category_id = categories.id WHERE  ( brand_code = 'AMP'  ) ) AS subquery", queryBuilder.get());
@@ -360,7 +393,8 @@ public class QueryBuilderTests {
 
             QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam")
                     .joinSubquery("categories", "products.category_id = categories.id", "products.id", "products.liam")
-                    .where("ah_code", "=", singleQuote("257497"))
+                    .where()
+                    .and("ah_code", "=", singleQuote("257497"))
                     .and("mch_code", "=", singleQuote("M10380306"))
                     .and("brand_code", "=", singleQuote("JAMI"))
                     .and("name ->> 'en'", "=", singleQuote("Vitamin C"))
@@ -376,7 +410,8 @@ public class QueryBuilderTests {
 
             QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam")
                     .joinSubquery("categories", "products.category_id = categories.id", "products.id", "products.liam")
-                    .where("products.ah_code", "=", singleQuote("240591"))
+                    .where()
+                    .and("products.ah_code", "=", singleQuote("240591"))
                     .and("products.mch_code", "=", singleQuote("M10210501"))
                     .and("products.brand_code", "=", singleQuote("CHRE"))
                     .and("categories.name ->> 'en'", "=", singleQuote("Kids Cookies"))
@@ -386,6 +421,21 @@ public class QueryBuilderTests {
             Assertions.assertEquals("SELECT id,liam FROM  ( SELECT products.id,products.liam FROM products JOIN categories ON products.category_id = categories.id WHERE products.id > 0  AND ( products.ah_code = '240591' AND products.mch_code = 'M10210501' AND products.brand_code = 'CHRE' AND categories.name ->> 'en' = 'Kids Cookies' AND (jsonb_to_tsvector('english', products.enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((products.enrichment -> 'dietary_callouts' = '[]' OR products.enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', products.data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') )) ) OFFSET 0 ) AS subquery ORDER BY subquery.id ASC LIMIT 50", queryBuilder.get());
 
         }
+
+        @Test
+        @DisplayName("Given : join query andDietary , When: query is generated with combination, Then: SQL native query should return")
+        public void testBasicQuery3() {
+
+            QueryBuilder queryBuilder = new QueryBuilder("products", "id, liam")
+                    .joinSubquery("categories", "products.category_id = categories.id", "products.id", "products.liam")
+                    .where()
+                    .andProductDietary("@@", List.of("peanut"))
+                    .build().build();
+
+            Assertions.assertEquals("SELECT id, liam FROM  ( SELECT products.id,products.liam FROM products JOIN categories ON products.category_id = categories.id WHERE  ( (jsonb_to_tsvector('english', products.enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((products.enrichment -> 'dietary_callouts' = '[]' OR products.enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', products.data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') )) ) ) AS subquery", queryBuilder.get());
+
+        }
+
 
     }
 

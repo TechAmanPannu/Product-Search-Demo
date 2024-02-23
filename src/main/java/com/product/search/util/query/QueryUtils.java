@@ -27,11 +27,11 @@ public interface QueryUtils {
 
 
 
-    static String createQuery(String property, String operator, String value) {
+    static String createCondition(String property, String operator, String value) {
         return String.format("%s %s %s ", property, operator, value);
     }
 
-    static String createORQuery(String property, String operator, List<String> values) {
+    static String createOrCondition(String property, String operator, List<String> values) {
         List<String> operations = new ArrayList<>();
         for (String value : values) {
             operations.add(String.format("%s %s %s ", property, operator, value));

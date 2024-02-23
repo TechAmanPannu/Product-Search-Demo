@@ -93,16 +93,14 @@ public class ProductStore {
 
     private String getJoinQuery(ProductSearchRequest productSearchRequest, Integer limit, String nextPageCursor, QueryBuilder queryBuilder) {
         List<ProductSearchCondition> conditions = productSearchRequest.getConditions();
-        SubqueryWhereClause whereClause = queryBuilder.joinSubquery(CATEGORY_TABLE_NAME, PRODUCTS_AND_CATEGORIES_ON_JOIN_EXP, JOIN_QUERY_COLUMNS).
-                where(conditions.get(0).getProperty().getColumnName(), conditions.get(0).getProperty().getOperator(conditions.get(0).getOperator()), singleQuote(conditions.get(0).getValue()));
+        SubqueryWhereClause whereClause = queryBuilder.joinSubquery(CATEGORY_TABLE_NAME, PRODUCTS_AND_CATEGORIES_ON_JOIN_EXP, JOIN_QUERY_COLUMNS).where();
         whereClause = productSearchRequest.isAllConditionsMatch() ? getAllConditionsMatched(whereClause, conditions, true) : getAllConditionsNonMatched(whereClause, conditions, true);
         return whereClause.build().offset(PERFORMANCE_FENCE_OFFSET_VALUE).nextPage(JOIN_QUERY_NEXT_PAGE_PROPERTY, nextPageCursor).build().sortBy(ORDER_BY_AND_NEXT_PAGE_PROPERTY, ORDER_BY).limit(limit.toString()).get();
     }
 
     private String getSubQuery(ProductSearchRequest productSearchRequest, Integer limit, String nextPageCursor, QueryBuilder queryBuilder) {
         List<ProductSearchCondition> conditions = productSearchRequest.getConditions();
-        SubqueryWhereClause whereClause = queryBuilder.subquery().
-                where(conditions.get(0).getProperty().getColumnName(), conditions.get(0).getProperty().getOperator(conditions.get(0).getOperator()), singleQuote(conditions.get(0).getValue()));
+        SubqueryWhereClause whereClause = queryBuilder.subquery().where();
         whereClause = productSearchRequest.isAllConditionsMatch() ? getAllConditionsMatched(whereClause, conditions) : getAllConditionsNonMatched(whereClause, conditions);
         return whereClause.build().offset(PERFORMANCE_FENCE_OFFSET_VALUE).nextPage(ORDER_BY_AND_NEXT_PAGE_PROPERTY, nextPageCursor).build().sortBy(ORDER_BY_AND_NEXT_PAGE_PROPERTY, ORDER_BY).limit(limit.toString()).get();
     }
@@ -110,7 +108,7 @@ public class ProductStore {
 
     private String getBasicQuery(ProductSearchRequest productSearchRequest, Integer limit, String nextPageCursor, QueryBuilder queryBuilder) {
         List<ProductSearchCondition> conditions = productSearchRequest.getConditions();
-        WhereClause whereClause = queryBuilder.where(conditions.get(0).getProperty().getColumnName(), conditions.get(0).getProperty().getOperator(conditions.get(0).getOperator()), singleQuote(conditions.get(0).getValue()));
+        WhereClause whereClause = queryBuilder.where();
         whereClause = productSearchRequest.isAllConditionsMatch() ? getAllConditionsMatched(whereClause, conditions) : getAllConditionsNonMatched(whereClause, conditions);
         return whereClause.build().nextPage(ORDER_BY_AND_NEXT_PAGE_PROPERTY, nextPageCursor).sortBy(ORDER_BY_AND_NEXT_PAGE_PROPERTY, ORDER_BY).limit(limit.toString()).get();
     }
@@ -125,7 +123,7 @@ public class ProductStore {
     }
 
     private SubqueryWhereClause getAllConditionsMatched(SubqueryWhereClause whereClause, List<ProductSearchCondition> conditions, boolean isJoinQuery) {
-        for (int i = 1; i < conditions.size(); i++) {
+        for (int i = 0; i < conditions.size(); i++) {
             if (conditions.get(i).getProperty() == ProductSearchProperty.DIETARY) {
                 whereClause = whereClause.andProductDietary(ProductSearchProperty.DIETARY.getOperator(conditions.get(i).getOperator()), List.of(conditions.get(i).getValue()));
             } else {
@@ -136,7 +134,7 @@ public class ProductStore {
     }
 
     private SubqueryWhereClause getAllConditionsNonMatched(SubqueryWhereClause whereClause, List<ProductSearchCondition> conditions, boolean isJoinedQuery) {
-        for (int i = 1; i < conditions.size(); i++) {
+        for (int i = 0; i < conditions.size(); i++) {
             if (conditions.get(i).getProperty() == ProductSearchProperty.DIETARY) {
                 whereClause = whereClause.orProductDietary(ProductSearchProperty.DIETARY.getOperator(conditions.get(i).getOperator()), List.of(conditions.get(i).getValue()));
             } else {
@@ -148,14 +146,14 @@ public class ProductStore {
     }
 
     private WhereClause getAllConditionsMatched(WhereClause whereClause, List<ProductSearchCondition> conditions) {
-        for (int i = 1; i < conditions.size(); i++) {
+        for (int i = 0; i < conditions.size(); i++) {
             whereClause = whereClause.and(conditions.get(i).getProperty().getColumnName(), conditions.get(i).getProperty().getOperator(conditions.get(i).getOperator()), singleQuote(conditions.get(i).getValue()));
         }
         return whereClause;
     }
 
     private WhereClause getAllConditionsNonMatched(WhereClause whereClause, List<ProductSearchCondition> conditions) {
-        for (int i = 1; i < conditions.size(); i++) {
+        for (int i = 0; i < conditions.size(); i++) {
             whereClause = whereClause.or(conditions.get(i).getProperty().getColumnName(), conditions.get(i).getProperty().getOperator(conditions.get(i).getOperator()), singleQuote(conditions.get(i).getValue()));
         }
         return whereClause;
