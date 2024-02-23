@@ -30,22 +30,34 @@ public class WhereClause {
     }
 
     public WhereClause and(String property, String operator, String value) {
+        if(operator == null || value == null || value.isEmpty()) {
+            return this;
+        }
         query = String.format("%sAND %s", this.query, createCondition(property, operator, value));
         return this;
     }
 
     public WhereClause and(String property, String operator, List<String> values) {
+        if(operator == null || values == null || values.isEmpty()) {
+            return this;
+        }
         query = String.format("%sAND %s", this.query, createOrCondition(property, operator, values));
         return this;
     }
 
 
     public WhereClause or(String property, String operator, String value) {
+        if(operator == null || value == null || value.isEmpty()) {
+            return this;
+        }
         query = String.format("%sOR %s", this.query, createCondition(property, operator, value));
         return this;
     }
 
     public WhereClause or(String property, String operator, List<String> values) {
+        if(operator == null || values == null || values.isEmpty()) {
+            return this;
+        }
         query = String.format("%sOR %s", this.query, createOrCondition(property, operator, values));
         return this;
     }

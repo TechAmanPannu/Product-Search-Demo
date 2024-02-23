@@ -29,33 +29,51 @@ public class SubqueryWhereClause {
     }
 
     public SubqueryWhereClause and(String property, String operator, String value) {
+        if(operator == null || value == null || value.isEmpty()) {
+            return this;
+        }
         this.query = String.format("%sAND %s", this.query, createCondition(property, operator, value));
         return this;
     }
 
     public SubqueryWhereClause and(String property, String operator, List<String> values) {
+        if(operator == null || values == null || values.isEmpty()) {
+            return this;
+        }
         this.query = String.format("%sAND %s", this.query, createOrCondition(property, operator, values));
         return this;
     }
 
 
     public SubqueryWhereClause or(String property, String operator, String value) {
+        if(operator == null || value == null || value.isEmpty()) {
+            return this;
+        }
         this.query = String.format("%sOR %s", this.query, createCondition(property, operator, value));
         return this;
     }
 
     public SubqueryWhereClause or(String property, String operator, List<String> values) {
+        if(operator == null || values == null || values.isEmpty()) {
+            return this;
+        }
         this.query = String.format("%sOR %s", this.query, createOrCondition(property, operator, values));
         return this;
     }
 
     public SubqueryWhereClause andProductDietary(String operator, List<String> values) {
+        if(operator == null || values == null || values.isEmpty()) {
+            return this;
+        }
         this.query = String.format("%sAND %s", this.query, createOrDietaryCondition(operator, values, this.subqueryBuilder.isJoinQuery()));
         return this;
     }
 
 
     public SubqueryWhereClause orProductDietary(String operator, List<String> values) {
+        if(operator == null || values == null || values.isEmpty()) {
+            return this;
+        }
         this.query = String.format("%sOR %s", this.query, createOrDietaryCondition(operator, values, this.subqueryBuilder.isJoinQuery()));
         return this;
     }
