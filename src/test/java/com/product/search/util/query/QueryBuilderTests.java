@@ -334,7 +334,7 @@ public class QueryBuilderTests {
                     .andProductDietary("@@", List.of("peanut"))
                     .build().offset("0").nextPage("id", "0").build();
 
-            Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM  ( SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE id > 0  AND ( ah_code = '240434' AND  ( mch_code = 'M10210301' OR mch_code = 'M10210302'  ) AND  ( brand_code = 'AMP' OR brand_code = 'GTRD'  ) AND (jsonb_to_tsvector('english', enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((enrichment -> 'dietary_callouts' = '[]' OR enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') )) ) OFFSET 0 ) AS subquery", queryBuilder.get());
+            Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM  ( SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE id > 0  AND ( ah_code = '240434' AND  ( mch_code = 'M10210301' OR mch_code = 'M10210302'  ) AND  ( brand_code = 'AMP' OR brand_code = 'GTRD'  ) AND  ( (jsonb_to_tsvector('english', enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((enrichment -> 'dietary_callouts' = '[]' OR enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') )) )  ) OFFSET 0 ) AS subquery", queryBuilder.get());
 
         }
 
@@ -347,10 +347,10 @@ public class QueryBuilderTests {
                     .where("ah_code", "=", singleQuote("240434"))
                     .or("mch_code", "=", List.of(singleQuote("M10210301"), singleQuote("M10210302")))
                     .or("brand_code", "=", List.of(singleQuote("AMP"), singleQuote("GTRD")))
-                    .orProductDietary("@@", List.of("peanut"))
+                    .orProductDietary("@@", List.of("peanut", "gluten"))
                     .build().offset("0").nextPage("id", "0").build();
 
-            Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM  ( SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE id > 0  AND ( ah_code = '240434' OR  ( mch_code = 'M10210301' OR mch_code = 'M10210302'  ) OR  ( brand_code = 'AMP' OR brand_code = 'GTRD'  ) OR (jsonb_to_tsvector('english', enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((enrichment -> 'dietary_callouts' = '[]' OR enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') )) ) OFFSET 0 ) AS subquery", queryBuilder.get());
+            Assertions.assertEquals("SELECT id,liam,ah_code,mch_code,brand_code FROM  ( SELECT id,liam,ah_code,mch_code,brand_code FROM products WHERE id > 0  AND ( ah_code = '240434' OR  ( mch_code = 'M10210301' OR mch_code = 'M10210302'  ) OR  ( brand_code = 'AMP' OR brand_code = 'GTRD'  ) OR  ( (jsonb_to_tsvector('english', enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((enrichment -> 'dietary_callouts' = '[]' OR enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') ))OR (jsonb_to_tsvector('english', enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('gluten') OR ((enrichment -> 'dietary_callouts' = '[]' OR enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('gluten') )) )  ) OFFSET 0 ) AS subquery", queryBuilder.get());
 
         }
 
@@ -418,7 +418,7 @@ public class QueryBuilderTests {
                     .andProductDietary("@@", List.of("peanut"))
                     .build().nextPage("products.id", "0").offset("0").build().sortBy("id", "ASC").limit("50");
 
-            Assertions.assertEquals("SELECT id,liam FROM  ( SELECT products.id,products.liam FROM products JOIN categories ON products.category_id = categories.id WHERE products.id > 0  AND ( products.ah_code = '240591' AND products.mch_code = 'M10210501' AND products.brand_code = 'CHRE' AND categories.name ->> 'en' = 'Kids Cookies' AND (jsonb_to_tsvector('english', products.enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((products.enrichment -> 'dietary_callouts' = '[]' OR products.enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', products.data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') )) ) OFFSET 0 ) AS subquery ORDER BY subquery.id ASC LIMIT 50", queryBuilder.get());
+            Assertions.assertEquals("SELECT id,liam FROM  ( SELECT products.id,products.liam FROM products JOIN categories ON products.category_id = categories.id WHERE products.id > 0  AND ( products.ah_code = '240591' AND products.mch_code = 'M10210501' AND products.brand_code = 'CHRE' AND categories.name ->> 'en' = 'Kids Cookies' AND  ( (jsonb_to_tsvector('english', products.enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((products.enrichment -> 'dietary_callouts' = '[]' OR products.enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', products.data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') )) )  ) OFFSET 0 ) AS subquery ORDER BY subquery.id ASC LIMIT 50", queryBuilder.get());
 
         }
 
@@ -432,11 +432,31 @@ public class QueryBuilderTests {
                     .andProductDietary("@@", List.of("peanut"))
                     .build().build();
 
-            Assertions.assertEquals("SELECT id, liam FROM  ( SELECT products.id,products.liam FROM products JOIN categories ON products.category_id = categories.id WHERE  ( (jsonb_to_tsvector('english', products.enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((products.enrichment -> 'dietary_callouts' = '[]' OR products.enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', products.data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') )) ) ) AS subquery", queryBuilder.get());
+            Assertions.assertEquals("SELECT id, liam FROM  ( SELECT products.id,products.liam FROM products JOIN categories ON products.category_id = categories.id WHERE  (  ( (jsonb_to_tsvector('english', products.enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((products.enrichment -> 'dietary_callouts' = '[]' OR products.enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', products.data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') )) )  ) ) AS subquery", queryBuilder.get());
+
+        }
+
+        @Test
+        @DisplayName("Given : join query andDietary with multiple values, When: query is generated with combination, Then: SQL native query should return")
+        public void testBasicQuery4() {
+
+            QueryBuilder queryBuilder = new QueryBuilder("products", "id, liam")
+                    .joinSubquery("categories", "products.category_id = categories.id", "products.id", "products.liam")
+                    .where()
+                    .andProductDietary("@@", List.of("peanut", "gluten"))
+                    .build().build();
+
+            Assertions.assertEquals("SELECT id, liam FROM  ( SELECT products.id,products.liam FROM products JOIN categories ON products.category_id = categories.id WHERE  (  ( (jsonb_to_tsvector('english', products.enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((products.enrichment -> 'dietary_callouts' = '[]' OR products.enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', products.data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') ))OR (jsonb_to_tsvector('english', products.enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('gluten') OR ((products.enrichment -> 'dietary_callouts' = '[]' OR products.enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', products.data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('gluten') )) )  ) ) AS subquery", queryBuilder.get());
 
         }
 
 
+    }
+
+
+    @Test
+    void test() {
+        System.out.println(QueryUtils.createOrDietaryCondition("@@", List.of("peanut", "butter"), false));
     }
 
 

@@ -17,6 +17,7 @@ public class SubqueryWhereClause {
         this.whereWithoutCondition = whereWithoutCondition;
         this.query = String.format("%sWHERE %s ( ", this.subqueryBuilder.get(), NEXT_PAGE_PATTERN);
     }
+
     public SubqueryWhereClause(SubqueryBuilder subqueryBuilder, String property, String operator, String value) {
         this.subqueryBuilder = subqueryBuilder;
         this.query = String.format("%sWHERE %s ( %s", this.subqueryBuilder.get(), NEXT_PAGE_PATTERN, createCondition(property, operator, value));
@@ -49,22 +50,19 @@ public class SubqueryWhereClause {
     }
 
     public SubqueryWhereClause andProductDietary(String operator, List<String> values) {
-
-        this.query = this.subqueryBuilder.isJoinQuery() ? String.format("%sAND " + PRODUCTS__DIETARY_JOIN_QUERY, this.query, operator, join("|", values), operator, join("|", values))
-                : String.format("%sAND "+PRODUCTS_DIETARY_QUERY, this.query, operator, join("|", values), operator, join("|", values));
+        this.query = String.format("%sAND %s", this.query, createOrDietaryCondition(operator, values, this.subqueryBuilder.isJoinQuery()));
         return this;
     }
 
 
     public SubqueryWhereClause orProductDietary(String operator, List<String> values) {
-        this.query = this.subqueryBuilder.isJoinQuery() ? String.format("%sOR " + PRODUCTS__DIETARY_JOIN_QUERY, this.query, operator, join("|", values), operator, join("|", values))
-                : String.format("%sOR "+PRODUCTS_DIETARY_QUERY, this.query, operator, join("|", values), operator, join("|", values));
+        this.query = String.format("%sOR %s", this.query, createOrDietaryCondition(operator, values, this.subqueryBuilder.isJoinQuery()));
         return this;
     }
 
 
     public SubqueryBuilder build() {
-        if(whereWithoutCondition) {
+        if (whereWithoutCondition) {
             this.query = this.query.replaceFirst("\\( AND", "(");
             this.query = this.query.replaceFirst("\\( OR", "(");
         }

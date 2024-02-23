@@ -49,14 +49,6 @@ public enum ProductSearchProperty {
         put(ProductSearchOperator.CONTAINS, "=");
     }}),
 
-    DIETARY("dietary", "products", "enrichment -> 'dietary_callouts'", new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "enrichment -> 'dietary_callouts'");
-        put(ProductSearchOperator.CONTAINS, "enrichment -> 'dietary_callouts'");
-    }},new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "?");
-        put(ProductSearchOperator.CONTAINS, "@@");
-    }}),
-
     SKIN_CONCERN("skinConcern", "products", "enrichment -> 'specifications'::text -> 'code'::text -> 'concern'::text", new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, "enrichment -> 'specifications'::text -> 'code'::text -> 'concern'::text");
         put(ProductSearchOperator.CONTAINS, "enrichment -> 'specifications'::text -> 'code'::text -> 'concern'::text");
@@ -71,7 +63,19 @@ public enum ProductSearchProperty {
     }},new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, "=");
         put(ProductSearchOperator.CONTAINS, "@@");
-    }});
+    }}),
+
+
+//    Not using the values from here, it is statically defined the SubQueryBuilder,
+//    it was done after seeing the complexity of the query required.
+
+    DIETARY("dietary", "products", "enrichment -> 'dietary_callouts'", new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, "enrichment -> 'dietary_callouts'");
+        put(ProductSearchOperator.CONTAINS, "enrichment -> 'dietary_callouts'");
+    }},new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, "?");
+        put(ProductSearchOperator.CONTAINS, "@@");
+    }}),;
 
 
     private String value;

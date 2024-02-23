@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
+import static com.product.search.util.query.QueryConstants.PRODUCTS_DIETARY_QUERY;
+import static com.product.search.util.query.QueryConstants.PRODUCTS__DIETARY_JOIN_QUERY;
+
 public interface QueryUtils {
 
     static String join(String delimeter, String[] values) {
@@ -35,6 +38,15 @@ public interface QueryUtils {
         List<String> operations = new ArrayList<>();
         for (String value : values) {
             operations.add(String.format("%s %s %s ", property, operator, value));
+        }
+        return String.format(" ( %s ) ", join("OR ", operations)) ;
+    }
+
+    static String createOrDietaryCondition(String operator, List<String> values, boolean isJoinQuery) {
+        List<String> operations = new ArrayList<>();
+        for (String value : values) {
+            operations.add(String.format(isJoinQuery ? PRODUCTS__DIETARY_JOIN_QUERY :
+                    PRODUCTS_DIETARY_QUERY, operator, value, operator, value));
         }
         return String.format(" ( %s ) ", join("OR ", operations)) ;
     }
