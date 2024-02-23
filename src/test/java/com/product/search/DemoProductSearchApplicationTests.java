@@ -34,13 +34,29 @@ class DemoProductSearchApplicationTests {
 
 
         boolean isSubQueryNeeded = isSubqueryNeeded(productSearchRequest);
+        boolean isJoinNeeded = isJoinNeeded(productSearchRequest);
+        String query = null;
+        QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam");
 
-        QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam", "ah_code", "mch_code", "brand_code", "enrichment", "data");
-        String query = isSubQueryNeeded ? getSubQuery(productSearchRequest, queryBuilder)
-                : getQuery(productSearchRequest, queryBuilder);
+        if (isJoinNeeded) {
+            query = getJoinQuery(productSearchRequest, queryBuilder);
+        } else if (isSubQueryNeeded) {
+            query = getSubQuery(productSearchRequest, queryBuilder);
+        } else {
+            query = getQuery(productSearchRequest, queryBuilder);
+        }
+
 
         Assertions.assertEquals("SELECT id,liam FROM  ( SELECT id,liam FROM products WHERE id > 0 AND ah_code = '234324' AND jsonb_to_tsvector('english', enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut|butter') OR ((enrichment -> 'dietary_callouts' = '[]' OR enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut|butter') )AND brand_code = '234324'  OFFSET 0 ) AS subquery ORDER BY id ASC", query);
     }
+
+    private String getJoinQuery(ProductSearchRequest productSearchRequest, QueryBuilder queryBuilder) {
+        List<ProductSearchCondition> conditions = productSearchRequest.getConditions();
+        SubqueryWhereClause whereClause = queryBuilder.joinSubquery("categories", "products.category_id = categories.id","products.id", "products.liam").where(conditions.get(0).getProperty().getColumnName(), conditions.get(0).getProperty().getOperator(conditions.get(0).getOperator()), singleQuote(conditions.get(0).getValue()));
+        whereClause = productSearchRequest.isAllConditionsMatch() ? getAllConditionsMatched(whereClause, conditions, true) : getAllConditionsNonMatched(whereClause, conditions, true);
+        return whereClause.build().offset("0").nextPage("products.id", "0").build().sortBy("id", "ASC").limit("50").get();
+    }
+
 
     private String getQuery(ProductSearchRequest productSearchRequest, QueryBuilder queryBuilder) {
         List<ProductSearchCondition> conditions = productSearchRequest.getConditions();
@@ -54,26 +70,35 @@ class DemoProductSearchApplicationTests {
         List<ProductSearchCondition> conditions = productSearchRequest.getConditions();
         SubqueryWhereClause whereClause = queryBuilder.subquery().where(conditions.get(0).getProperty().getColumnName(), conditions.get(0).getProperty().getOperator(conditions.get(0).getOperator()), singleQuote(conditions.get(0).getValue()));
         whereClause = productSearchRequest.isAllConditionsMatch() ? getAllConditionsMatched(whereClause, conditions) : getAllConditionsNonMatched(whereClause, conditions);
-        return whereClause.build().nextPage("id", "0").sortBy("id", "ASC").build().limit("50").get();
+        return whereClause.build().offset("0").nextPage("id", "0").build().sortBy("id", "ASC").limit("50").get();
     }
 
+
     private SubqueryWhereClause getAllConditionsMatched(SubqueryWhereClause whereClause, List<ProductSearchCondition> conditions) {
+        return getAllConditionsMatched(whereClause, conditions, false);
+    }
+
+    private SubqueryWhereClause getAllConditionsNonMatched(SubqueryWhereClause whereClause, List<ProductSearchCondition> conditions) {
+        return getAllConditionsNonMatched(whereClause, conditions, false);
+    }
+
+    private SubqueryWhereClause getAllConditionsMatched(SubqueryWhereClause whereClause, List<ProductSearchCondition> conditions, boolean isJoinQuery) {
         for (int i = 1; i < conditions.size(); i++) {
             if (conditions.get(i).getProperty() == ProductSearchProperty.DIETARY) {
-                whereClause = whereClause.andDietary(ProductSearchProperty.DIETARY.getOperator(conditions.get(i).getOperator()), List.of(conditions.get(i).getValue()));
+                whereClause = whereClause.andProductDietary(ProductSearchProperty.DIETARY.getOperator(conditions.get(i).getOperator()), List.of(conditions.get(i).getValue()));
             } else {
-                whereClause = whereClause.and(conditions.get(i).getProperty().getColumnName(), conditions.get(i).getProperty().getOperator(conditions.get(i).getOperator()), singleQuote(conditions.get(i).getValue()));
+                whereClause = whereClause.and(conditions.get(i).getProperty().getColumnName(isJoinQuery), conditions.get(i).getProperty().getOperator(conditions.get(i).getOperator()), singleQuote(conditions.get(i).getValue()));
             }
         }
         return whereClause;
     }
 
-    private SubqueryWhereClause getAllConditionsNonMatched(SubqueryWhereClause whereClause, List<ProductSearchCondition> conditions) {
+    private SubqueryWhereClause getAllConditionsNonMatched(SubqueryWhereClause whereClause, List<ProductSearchCondition> conditions, boolean isJoinedQuery) {
         for (int i = 1; i < conditions.size(); i++) {
             if (conditions.get(i).getProperty() == ProductSearchProperty.DIETARY) {
-                whereClause = whereClause.orDietary(ProductSearchProperty.DIETARY.getOperator(conditions.get(i).getOperator()), List.of(conditions.get(i).getValue()));
+                whereClause = whereClause.orProductDietary(ProductSearchProperty.DIETARY.getOperator(conditions.get(i).getOperator()), List.of(conditions.get(i).getValue()));
             } else {
-                whereClause = whereClause.or(conditions.get(i).getProperty().getColumnName(), conditions.get(i).getProperty().getOperator(conditions.get(i).getOperator()), singleQuote(conditions.get(i).getValue()));
+                whereClause = whereClause.or(conditions.get(i).getProperty().getColumnName(isJoinedQuery), conditions.get(i).getProperty().getOperator(conditions.get(i).getOperator()), singleQuote(conditions.get(i).getValue()));
             }
         }
 
@@ -104,6 +129,16 @@ class DemoProductSearchApplicationTests {
         return false;
     }
 
+    private boolean isJoinNeeded(ProductSearchRequest productSearchRequest) {
+        for (ProductSearchCondition condition : productSearchRequest.getConditions()) {
+            if (condition.getProperty() == ProductSearchProperty.PRODUCT_CATEGORY_NAME) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private ProductSearchRequest constructSearchRequest(boolean allConditionsMatch) {
 
         ProductSearchRequest productSearchRequest = new ProductSearchRequest();
@@ -111,25 +146,30 @@ class DemoProductSearchApplicationTests {
         ProductSearchCondition productSearchCondition = new ProductSearchCondition();
         productSearchCondition.setProperty(ProductSearchProperty.AH_CODE);
         productSearchCondition.setOperator(ProductSearchOperator.EQ);
-        productSearchCondition.setValue("240434");
+        productSearchCondition.setValue("240591");
 
         ProductSearchCondition productSearchCondition_1 = new ProductSearchCondition();
         productSearchCondition_1.setProperty(ProductSearchProperty.MCH_CODE);
         productSearchCondition_1.setOperator(ProductSearchOperator.EQ);
-        productSearchCondition_1.setValue("M10210301");
+        productSearchCondition_1.setValue("M10210501");
 
         ProductSearchCondition productSearchCondition_2 = new ProductSearchCondition();
         productSearchCondition_2.setProperty(ProductSearchProperty.BRAND_CODE);
         productSearchCondition_2.setOperator(ProductSearchOperator.EQ);
-        productSearchCondition_2.setValue("AMP");
+        productSearchCondition_2.setValue("CHRE");
 
         ProductSearchCondition productSearchCondition_3 = new ProductSearchCondition();
         productSearchCondition_3.setProperty(ProductSearchProperty.DIETARY);
         productSearchCondition_3.setOperator(ProductSearchOperator.CONTAINS);
         productSearchCondition_3.setValue("peanut");
 
+        ProductSearchCondition productSearchCondition_4 = new ProductSearchCondition();
+        productSearchCondition_4.setProperty(ProductSearchProperty.PRODUCT_CATEGORY_NAME);
+        productSearchCondition_4.setOperator(ProductSearchOperator.CONTAINS);
+        productSearchCondition_4.setValue("Kids Cookies");
 
-        productSearchRequest.setConditions(List.of(productSearchCondition, productSearchCondition_1, productSearchCondition_2, productSearchCondition_3));
+
+        productSearchRequest.setConditions(List.of(productSearchCondition, productSearchCondition_1, productSearchCondition_2, productSearchCondition_3, productSearchCondition_4));
 
         productSearchRequest.setAllConditionsMatch(allConditionsMatch);
         return productSearchRequest;

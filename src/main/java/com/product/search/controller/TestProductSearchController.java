@@ -27,9 +27,9 @@ public class TestProductSearchController {
 
 
     @PostMapping(value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ProductResponseModel>> search(@RequestBody ProductSearchRequest productSearchRequest) {
+    public ResponseEntity<List<ProductResponseModel>> search(@RequestBody ProductSearchRequest productSearchRequest, @RequestParam(value = "limit", required = false, defaultValue = "50") Integer limit, @RequestParam(value = "next_page_cursor", required = false, defaultValue = "0") String nextPageCursor) {
        return ResponseEntity
-               .ok(productService.search(productSearchRequest));
+               .ok(productService.search(productSearchRequest, limit, nextPageCursor));
     }
 
 }

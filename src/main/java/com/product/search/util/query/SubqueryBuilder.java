@@ -16,14 +16,17 @@ public class SubqueryBuilder {
 
     private String nextPage;
 
+    private boolean isJoinQuery;
+
     public SubqueryBuilder(QueryBuilder builder, String tableName, String[] columns) {
         this(builder, tableName, null, columns, false);
     }
 
     public SubqueryBuilder(QueryBuilder builder, String tableName, String joinOn, String[] columns, boolean isJoinQuery) {
         this.queryBuilder = builder;
+        this.isJoinQuery = isJoinQuery;
         this.query = isJoinQuery ?
-                String.format("( SELECT %s FROM %s JOIN %s ON %s", join(",", columns), builder.tableName(), tableName, joinOn)
+                String.format("( SELECT %s FROM %s JOIN %s ON %s ", join(",", columns), builder.tableName(), tableName, joinOn)
                 : String.format("( SELECT %s FROM %s ", join(",", builder.columns()), builder.tableName());
     }
 
@@ -74,6 +77,10 @@ public class SubqueryBuilder {
         }
         this.queryBuilder.setQuery(tempQuery);
         return this.queryBuilder;
+    }
+
+    public boolean isJoinQuery() {
+        return this.isJoinQuery;
     }
 
 

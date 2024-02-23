@@ -9,14 +9,12 @@ import java.util.Map;
 public class ProductResponseModel {
 
     private String liam;
-//    private String ahCode;
-//    private String mchCode;
+    private Long id;
 
     public static ProductResponseModel of(Product product) {
         ProductResponseModel productResponseModel = new ProductResponseModel();
         productResponseModel.setLiam(product.getLiam());
-//        productResponseModel.setAhCode(product.getAhCode());
-//        productResponseModel.setMchCode(product.getMchCode());
+       productResponseModel.setId(product.getId());
         return productResponseModel;
     }
 }

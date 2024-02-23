@@ -10,5 +10,5 @@ public interface ProductService {
 
     ProductResponseModel getByLiam(String liam);
 
-    List<ProductResponseModel> search(ProductSearchRequest productSearchRequest);
+    List<ProductResponseModel> search(ProductSearchRequest productSearchRequest, Integer limit, String nextPageCursor);
 }

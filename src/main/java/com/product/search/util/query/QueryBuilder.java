@@ -17,12 +17,15 @@ public class QueryBuilder {
 
 
 
+    public QueryBuilder(String tableName) {
+        this(tableName, "*");
+    }
+
     public QueryBuilder(String tableName, String... columns) {
         this.query = String.format("SELECT %s FROM %s ", join(",", columns), tableName);
         this.tableName = tableName;
         this.columns = columns;
     }
-
 
     public WhereClause where(String property, String operator, String value) {
         WhereClause whereClause = new WhereClause(this, property, operator, value);
@@ -44,6 +47,10 @@ public class QueryBuilder {
     public SubqueryBuilder joinSubquery(String anotherTableName, String joinOn, String... columns) {
         this.isJoinSubqueryQuery = true;
         return new SubqueryBuilder(this, anotherTableName, joinOn, columns, true);
+    }
+
+    public SubqueryBuilder joinSubquery(String anotherTableName, String joinOn) {
+        return joinSubquery(anotherTableName, joinOn, "*");
     }
 
     public QueryBuilder sortBy(String property, String order) {

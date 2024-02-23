@@ -27,11 +27,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponseModel> search(ProductSearchRequest productSearchRequest) {
+    public List<ProductResponseModel> search(ProductSearchRequest productSearchRequest, Integer limit, String nextPageCursor) {
         if (productSearchRequest == null || productSearchRequest.getConditions() == null || productSearchRequest.getConditions().isEmpty()) {
             return List.of();
         }
-        return productStore.searchProducts(productSearchRequest)
+        return productStore.searchProducts(productSearchRequest, limit, nextPageCursor)
                 .stream()
                 .map(ProductResponseModel::of)
                 .collect(Collectors.toList());
