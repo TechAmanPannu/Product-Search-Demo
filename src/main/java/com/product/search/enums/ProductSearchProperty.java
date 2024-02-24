@@ -34,13 +34,6 @@ public enum ProductSearchProperty {
         put(ProductSearchOperator.CONTAINS, "=");
     }}),
 
-    PRODUCT_COLOR("productColor", "products", "variant_data -> 'color' ->> 'en'", new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "variant_data -> 'color' ->> 'en'");
-        put(ProductSearchOperator.CONTAINS, "variant_data -> 'color' -> 'en'");
-    }},new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "=");
-        put(ProductSearchOperator.CONTAINS, "@@");
-    }}),
     PRODUCT_CATEGORY_NAME("ProductCategoryName", "categories", "name ->> 'en'",new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, "name ->> 'en'");
         put(ProductSearchOperator.CONTAINS, "name -> 'en'");
@@ -49,33 +42,43 @@ public enum ProductSearchProperty {
         put(ProductSearchOperator.CONTAINS, "=");
     }}),
 
-    SKIN_CONCERN("skinConcern", "products", "enrichment -> 'specifications'::text -> 'code'::text -> 'concern'::text", new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "enrichment -> 'specifications'::text -> 'code'::text -> 'concern'::text");
-        put(ProductSearchOperator.CONTAINS, "enrichment -> 'specifications'::text -> 'code'::text -> 'concern'::text");
-    }},new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "=");
-        put(ProductSearchOperator.CONTAINS, "@@");
-    }}),
 
     DELIVERY("delivery", "products", "enrichment -> 'specifications'::text -> 'en'::text -> 'delivery'::text", new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "brand_code");
+        put(ProductSearchOperator.EQ, "LOWER(enrichment -> 'specifications' -> 'en' ->> 'delivery')");
         put(ProductSearchOperator.CONTAINS, "brand_code");
     }},new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, "=");
         put(ProductSearchOperator.CONTAINS, "@@");
-    }}),
+    }}, true),
 
 
-//    Not using the values from here, it is statically defined the SubQueryBuilder,
+    SKIN_CONCERN("skinConcern", "products", "enrichment -> 'specifications'::text -> 'code'::text -> 'concern'::text", new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, "LOWER(enrichment -> 'specifications' -> 'code' ->> 'concern')");
+        put(ProductSearchOperator.CONTAINS, "enrichment -> 'specifications'::text -> 'code'::text -> 'concern'::text");
+    }},new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, "=");
+        put(ProductSearchOperator.CONTAINS, "@@");
+    }}, true),
+
+
+    PRODUCT_COLOR("productColor", "products", "variant_data -> 'color' ->> 'en'", new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, "LOWER(variant_data -> 'color' ->> 'en')");
+        put(ProductSearchOperator.CONTAINS, "variant_data -> 'color' -> 'en'");
+    }},new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, "=");
+        put(ProductSearchOperator.CONTAINS, "@@");
+    }}, true),
+
+
+//    Search query is using only operator mapping from dietary configuration, others are  statically defined the SubQueryBuilder,
 //    it was done after seeing the complexity of the query required.
-
     DIETARY("dietary", "products", "enrichment -> 'dietary_callouts'", new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, "enrichment -> 'dietary_callouts'");
         put(ProductSearchOperator.CONTAINS, "enrichment -> 'dietary_callouts'");
     }},new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "?");
+        put(ProductSearchOperator.EQ, "@@");
         put(ProductSearchOperator.CONTAINS, "@@");
-    }}),;
+    }});
 
 
     private String value;
@@ -84,14 +87,20 @@ public enum ProductSearchProperty {
     private Map<ProductSearchOperator, String> searchOperatorMappings;
     private Map<ProductSearchOperator, String> searchOperatorsColumnMappings;
     private ProductSearchQueryType queryType;
+    private boolean lowerIndexCreated;
 
 
     ProductSearchProperty(String value, String tableName, String columnName, Map<ProductSearchOperator, String> searchOperatorsColumnMappings, Map<ProductSearchOperator, String> searchOperatorMappings) {
+        this(value, tableName, columnName, searchOperatorsColumnMappings,searchOperatorMappings, false);
+
+    }
+    ProductSearchProperty(String value, String tableName, String columnName, Map<ProductSearchOperator, String> searchOperatorsColumnMappings, Map<ProductSearchOperator, String> searchOperatorMappings, boolean lowerIndexCreated) {
         this.value = value;
         this.tableName = tableName;
         this.columnName = columnName;
         this.searchOperatorsColumnMappings = searchOperatorsColumnMappings;
         this.searchOperatorMappings = searchOperatorMappings;
+        this.lowerIndexCreated = lowerIndexCreated;
 
     }
 
@@ -109,20 +118,24 @@ public enum ProductSearchProperty {
     }
 
 
-    public String getColumnName(boolean isJoinQuery) {
+    public String getColumnName(ProductSearchOperator operator, boolean isJoinQuery) {
+        String column = this.searchOperatorsColumnMappings.get(operator);
         if (!isJoinQuery) {
-          return this.columnName;
+          return column;
         }
-        return String.format("%s.%s", this.tableName, this.columnName);
+        return String.format("%s.%s", this.tableName, column);
     }
 
-    public String getColumnName() {
-        return getColumnName(false);
+    public String getColumnName(ProductSearchOperator operator) {
+        return getColumnName(operator, false);
     }
 
     public String getOperator(ProductSearchOperator productSearchOperator) {
         return this.searchOperatorMappings.get(productSearchOperator);
     }
 
+    public boolean isLowerIndexCreated() {
+        return this.lowerIndexCreated;
+    }
 }
 

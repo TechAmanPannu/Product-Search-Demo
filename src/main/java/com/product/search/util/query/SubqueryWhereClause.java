@@ -1,6 +1,8 @@
 package com.product.search.util.query;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 import static com.product.search.util.query.QueryConstants.*;
 import static com.product.search.util.query.QueryUtils.*;
@@ -65,16 +67,23 @@ public class SubqueryWhereClause {
         if(operator == null || values == null || values.isEmpty()) {
             return this;
         }
-        this.query = String.format("%sAND %s", this.query, createOrDietaryCondition(operator, values, this.subqueryBuilder.isJoinQuery()));
+        List<String> updatedValues = new ArrayList<>();
+        for (String value : values) {
+            updatedValues.add(join("&", value.split(" ")));
+        }
+        this.query = String.format("%sAND %s", this.query, createOrDietaryCondition(operator, updatedValues, this.subqueryBuilder.isJoinQuery()));
         return this;
     }
-
 
     public SubqueryWhereClause orProductDietary(String operator, List<String> values) {
         if(operator == null || values == null || values.isEmpty()) {
             return this;
         }
-        this.query = String.format("%sOR %s", this.query, createOrDietaryCondition(operator, values, this.subqueryBuilder.isJoinQuery()));
+        List<String> updatedValues = new ArrayList<>();
+        for (String value : values) {
+            updatedValues.add(join("&", value.split(" ")));
+        }
+        this.query = String.format("%sOR %s", this.query, createOrDietaryCondition(operator, updatedValues, this.subqueryBuilder.isJoinQuery()));
         return this;
     }
 

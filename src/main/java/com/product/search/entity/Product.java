@@ -23,30 +23,30 @@ public class Product implements Serializable {
 
 //    private String uom;
 //
-//    private String status;
+    private String status;
 //
-//    @Column(name = "ah_code")
-//    private String ahCode;
-//
-//    @Column(name = "mch_code")
-//    private  String mchCode;
-//
-//    @Column(columnDefinition = "jsonb")
-//    private String data;
-//
-//    @Column(name = "inserted_at")
-//    private String insertedAt;
-//
-//    @Column(name = "updated_at")
-//    private String updatedAt;
-//
-//    @Column(columnDefinition = "jsonb")
-//    private String enrichment;
+    @Column(name = "ah_code")
+    private String ahCode;
+
+    @Column(name = "mch_code")
+    private  String mchCode;
+
+    @Column(columnDefinition = "jsonb")
+    private String data;
+
+    @Column(name = "inserted_at")
+    private String insertedAt;
+
+    @Column(name = "updated_at")
+    private String updatedAt;
+
+    @Column(columnDefinition = "jsonb")
+    private String enrichment;
 //
 //    private Long version;
 //
-//    @Column(name = "brand_code")
-//    private String brandCode;
+    @Column(name = "brand_code")
+    private String brandCode;
 //
 ////    private String date;
 //
@@ -69,9 +69,9 @@ public class Product implements Serializable {
 //    private String sellingType;
 //
 //
-//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "category_id", referencedColumnName = "id")
-//    private Category category;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
 //
 //    @Column(name = "nav_categories")
 //    private String navCategories;
@@ -82,8 +82,8 @@ public class Product implements Serializable {
 //    @Column(name = "primary_variant")
 //    private Boolean primaryVariant;
 //
-//    @Column(name = "variant_data", columnDefinition = "jsonb")
-//    private String variantData;
+    @Column(name = "variant_data", columnDefinition = "jsonb")
+    private String variantData;
 //
 //    @Column(name = "variant_group")
 //    private String variantGroup;
