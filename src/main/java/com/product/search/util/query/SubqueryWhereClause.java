@@ -67,11 +67,7 @@ public class SubqueryWhereClause {
         if(operator == null || values == null || values.isEmpty()) {
             return this;
         }
-        List<String> updatedValues = new ArrayList<>();
-        for (String value : values) {
-            updatedValues.add(join("&", value.split(" ")));
-        }
-        this.query = String.format("%sAND %s", this.query, createOrDietaryCondition(operator, updatedValues, this.subqueryBuilder.isJoinQuery()));
+        this.query = String.format("%sAND %s", this.query, createOrDietaryCondition(operator, values, this.subqueryBuilder.isJoinQuery()));
         return this;
     }
 
@@ -79,11 +75,7 @@ public class SubqueryWhereClause {
         if(operator == null || values == null || values.isEmpty()) {
             return this;
         }
-        List<String> updatedValues = new ArrayList<>();
-        for (String value : values) {
-            updatedValues.add(join("&", value.split(" ")));
-        }
-        this.query = String.format("%sOR %s", this.query, createOrDietaryCondition(operator, updatedValues, this.subqueryBuilder.isJoinQuery()));
+        this.query = String.format("%sOR %s", this.query, createOrDietaryCondition(operator, values, this.subqueryBuilder.isJoinQuery()));
         return this;
     }
 

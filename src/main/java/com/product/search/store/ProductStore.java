@@ -67,6 +67,7 @@ public class ProductStore {
     private String getSearchQuery(ProductSearchRequest productSearchRequest, Integer limit, String nextPageCursor) {
         QueryBuilder queryBuilder = new QueryBuilder(PRODUCT_TABLE_NAME, QUERY_COLUMNS);
         ProductSearchQueryType queryType = getQueryType(productSearchRequest);
+        System.out.println("QueryType : "+queryType);
         switch (queryType) {
             case JOIN_QUERY:
                 return getJoinQuery(productSearchRequest, limit, nextPageCursor, queryBuilder);
