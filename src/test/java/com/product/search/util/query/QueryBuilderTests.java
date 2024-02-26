@@ -470,6 +470,24 @@ public class QueryBuilderTests {
         }
 
         @Test
+        @DisplayName("Given : join basic AND subquery with ah_code, mch_code and brand_code, category name with single value when the operator is @@, dietary along with optimization fence with offset 0, nextpage, order by limit and  with EQ operator, When: query is generated with combination, Then: SQL native query should return")
+        public void testBasicSubQuery8() {
+
+            QueryBuilder queryBuilder = new QueryBuilder("products", "id", "liam")
+                    .joinSubquery("categories", "products.category_id = categories.id", "products.id", "products.liam")
+                    .where()
+                    .and("products.ah_code", "=", singleQuote("240591"))
+                    .and("products.mch_code", "=", singleQuote("M10210501"))
+                    .and("products.brand_code", "=", singleQuote("CHRE"))
+                    .and("jsonb_to_tsvector('english', categories.name -> CAST('en' AS TEXT), '[\"string\"]')", "@@", singleQuote("Kids Cookies"))
+                    .andProductDietary("@@", List.of("peanut"))
+                    .build().nextPage("products.id", "0").offset("0").build().sortBy("id", "ASC").limit("50");
+
+            Assertions.assertEquals("SELECT id,liam FROM  ( SELECT products.id,products.liam FROM products JOIN categories ON products.category_id = categories.id WHERE products.id > 0  AND ( products.ah_code = '240591' AND products.mch_code = 'M10210501' AND products.brand_code = 'CHRE' AND jsonb_to_tsvector('english', categories.name -> CAST('en' AS TEXT), '[\"string\"]') @@ to_tsquery('Kids&Cookies') AND  ( (jsonb_to_tsvector('english', products.enrichment -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') OR ((products.enrichment -> 'dietary_callouts' = '[]' OR products.enrichment -> 'dietary_callouts'= 'null') AND jsonb_to_tsvector('english', products.data -> 'dietary_callouts', '[\"string\"]') @@ to_tsquery('peanut') )) )  ) OFFSET 0 ) AS subquery ORDER BY subquery.id ASC LIMIT 50", queryBuilder.get());
+
+        }
+
+        @Test
         @DisplayName("Given : join basic AND subquery with ah_code, mch_code and brand_code, category name with multiple values when the operator is =, dietary along with optimization fence with offset 0, nextpage, order by limit and  with EQ operator, When: query is generated with combination, Then: SQL native query should return")
         public void testBasicSubQuery6() {
 

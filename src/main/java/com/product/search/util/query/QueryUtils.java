@@ -31,7 +31,7 @@ public interface QueryUtils {
 
     static String createCondition(String property, String operator, String value) {
         if(TS_TOQUERY_OPERATORS.contains(operator)) {
-            value = getTSQueryValue(value);
+            value = getTSQueryValue(join("&",value.split(" ")));
         }
         return String.format("%s %s %s ", property, operator, value);
     }
