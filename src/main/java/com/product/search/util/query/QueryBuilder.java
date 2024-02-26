@@ -16,7 +16,6 @@ public class QueryBuilder {
     private String nextPage;
 
 
-
     public QueryBuilder(String tableName) {
         this(tableName, "*");
     }
