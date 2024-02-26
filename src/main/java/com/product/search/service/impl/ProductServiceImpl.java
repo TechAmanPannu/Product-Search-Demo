@@ -1,14 +1,10 @@
 package com.product.search.service.impl;
 
-import com.product.search.entity.Product;
-import com.product.search.model.request.ProductSearchCondition;
 import com.product.search.model.request.ProductSearchRequest;
 import com.product.search.model.response.ProductResponseModel;
 import com.product.search.service.ProductService;
 import com.product.search.store.ProductStore;
-import com.product.search.util.ProductSpecifications;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
