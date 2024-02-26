@@ -45,7 +45,7 @@ public enum ProductSearchProperty {
 
     DELIVERY("delivery", "products", "enrichment -> 'specifications'::text -> 'en'::text -> 'delivery'::text", new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, "LOWER({tableName}.enrichment -> 'specifications' -> 'en' ->> 'delivery')");
-        put(ProductSearchOperator.CONTAINS, "brand_code");
+        put(ProductSearchOperator.CONTAINS, "jsonb_to_tsvector('english', {tableName}.enrichment ->  CAST('specifications' AS TEXT) -> CAST('en' AS TEXT) -> CAST('delivery' AS TEXT), '[\"string\"]')");
     }},new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, "=");
         put(ProductSearchOperator.CONTAINS, "@@");
@@ -54,7 +54,7 @@ public enum ProductSearchProperty {
 
     SKIN_CONCERN("skinConcern", "products", "enrichment -> 'specifications'::text -> 'code'::text -> 'concern'::text", new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, "LOWER({tableName}.enrichment -> 'specifications' -> 'code' ->> 'concern')");
-        put(ProductSearchOperator.CONTAINS, "{tableName}.enrichment -> 'specifications'::text -> 'code'::text -> 'concern'::text");
+        put(ProductSearchOperator.CONTAINS, "jsonb_to_tsvector('english', {tableName}.enrichment ->  CAST('specifications' AS TEXT) -> CAST('code' AS TEXT) -> CAST('concern' AS TEXT), '[\"string\"]')");
     }},new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, "=");
         put(ProductSearchOperator.CONTAINS, "@@");
@@ -63,7 +63,7 @@ public enum ProductSearchProperty {
 
     PRODUCT_COLOR("productColor", "products", "variant_data -> 'color' ->> 'en'", new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, "LOWER({tableName}.variant_data -> 'color' ->> 'en')");
-        put(ProductSearchOperator.CONTAINS, "{tableName}.variant_data -> 'color' -> 'en'");
+        put(ProductSearchOperator.CONTAINS, "jsonb_to_tsvector('english', variant_data -> CAST('color' AS TEXT) -> CAST('en' AS TEXT), '[\"string\"]')");
     }},new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, "=");
         put(ProductSearchOperator.CONTAINS, "@@");
