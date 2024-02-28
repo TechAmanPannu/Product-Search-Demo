@@ -30,9 +30,6 @@ public interface QueryUtils {
 
 
     static String createCondition(String property, String operator, String value) {
-//        if(TS_TOQUERY_OPERATORS.contains(operator)) {
-//            value = getTSQueryValue(join("&",value.split(" ")));
-//        }
         return String.format("%s %s %s ", property, operator, value);
     }
 
@@ -43,14 +40,7 @@ public interface QueryUtils {
     static String createOrCondition(String property, String operator, List<String> values) {
         List<String> conditions = new ArrayList<>();
 
-        boolean isTSQuery = false;
-//        if(TS_TOQUERY_OPERATORS.contains(operator)) {
-//            isTSQuery = true;
-//        }
         for (String value : values) {
-            if(isTSQuery) {
-                value = getTSQueryValue(join("&", value.split(" ")));
-            }
             conditions.add(String.format("%s %s %s ", property, operator, value));
         }
         return String.format(" ( %s ) ", join("OR ", conditions)) ;
@@ -59,7 +49,6 @@ public interface QueryUtils {
     static String createOrDietaryCondition(String operator, List<String> values, boolean isJoinQuery) {
         List<String> operations = new ArrayList<>();
         for (String value : values) {
-            value = join("&", value.split(" "));
             operations.add(String.format(isJoinQuery ? PRODUCTS__DIETARY_JOIN_QUERY :
                     PRODUCTS_DIETARY_QUERY, operator, value, operator, value));
         }

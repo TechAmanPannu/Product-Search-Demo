@@ -58,8 +58,8 @@ public enum ProductSearchProperty {
     //    Search query is using only operator mapping from dietary configuration, others are  statically defined in the SubQueryBuilder,
 //    It was done after seeing the complexity of the query required.
     DIETARY("dietary", "products", new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("@@", ProductSearchQueryType.SUB_QUERY));
-        put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("@@", ProductSearchQueryType.SUB_QUERY));
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("@@", false, true, ProductSearchQueryType.SUB_QUERY));
+        put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("@@", false, true, ProductSearchQueryType.SUB_QUERY));
     }});
 
 
@@ -110,24 +110,30 @@ public enum ProductSearchProperty {
         return this.operatorConfigurations.get(productSearchOperator).isLowerIndex();
     }
 
-    public String getValue(ProductSearchOperator searchOperator, String requestedValue) {
+    public List<String> getValue(ProductSearchOperator searchOperator, List<String> requestedValues) {
+
         ProductSearchOperatorConfiguration productSearchOperator = this.operatorConfigurations.get(searchOperator);
         String valueExpression = productSearchOperator.getValueExpression();
-        if (valueExpression == null || valueExpression.isEmpty()) {
-            return requestedValue;
-        }
 
-        if (productSearchOperator.isLowerIndex()) {
-            requestedValue = requestedValue.toLowerCase();
+        List<String> updatedValues = new ArrayList<>();
+        for (String requestedValue : requestedValues) {
+            if (productSearchOperator.isLowerIndex()) {
+                requestedValue = requestedValue.toLowerCase();
+            }
+            if (productSearchOperator.isTsQuery()) {
+                requestedValue = join("&", requestedValue.split(" "));
+            }
+
+            if (valueExpression != null && !valueExpression.isEmpty()) {
+                requestedValue = valueExpression.replaceFirst("\\{val}", requestedValue);
+            }
+            updatedValues.add(requestedValue);
         }
-        if (productSearchOperator.isTsQuery()) {
-            requestedValue = join("&", requestedValue.split(" "));
-        }
-        return valueExpression.replaceFirst("\\{val}", requestedValue);
+        return updatedValues;
     }
 
     public static ProductSearchQueryType getSearchQueryType(List<ProductSearchCondition> productSearchConditions) {
-        if(productSearchConditions == null || productSearchConditions.isEmpty()) {
+        if (productSearchConditions == null || productSearchConditions.isEmpty()) {
             return ProductSearchQueryType.BASIC_QUERY;
         }
         Set<ProductSearchQueryType> eligibleQueryTypes = new HashSet<>();

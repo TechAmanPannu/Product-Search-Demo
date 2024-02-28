@@ -18,6 +18,13 @@ public class ProductSearchOperatorConfiguration {
         this.operator = operator;
         this.requiredQueryType = requiredQueryType;
     }
+
+    public ProductSearchOperatorConfiguration(String operator, boolean lowerIndex, boolean tsQuery, ProductSearchQueryType requiredQueryType) {
+        this( operator, requiredQueryType);
+        this.lowerIndex = lowerIndex;
+        this.tsQuery = tsQuery;
+    }
+
     public ProductSearchOperatorConfiguration(String columnExpression, String operator, ProductSearchQueryType requiredQueryType) {
         this(operator, requiredQueryType);
         this.columnExpression = columnExpression;

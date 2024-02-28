@@ -115,9 +115,9 @@ public class ProductStore {
             ProductSearchProperty productSearchProperty = condition.getProperty();
             String value = condition.getValue();
             if (productSearchProperty == ProductSearchProperty.DIETARY) {
-                whereClause = whereClause.andProductDietary(productSearchProperty.DIETARY.getOperator(productSearchOperator), List.of(value));
+                whereClause = whereClause.andProductDietary(productSearchProperty.DIETARY.getOperator(productSearchOperator), productSearchProperty.DIETARY.getValue(productSearchOperator, List.of(value)));
             } else {
-                whereClause = whereClause.and(productSearchProperty.getColumnName(productSearchOperator, isJoinQuery), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, value));
+                whereClause = whereClause.and(productSearchProperty.getColumnName(productSearchOperator, isJoinQuery), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, List.of(value)));
             }
         }
         return whereClause;
@@ -130,9 +130,9 @@ public class ProductStore {
             ProductSearchProperty productSearchProperty = condition.getProperty();
             String value = condition.getValue();
             if (productSearchProperty == ProductSearchProperty.DIETARY) {
-                whereClause = whereClause.orProductDietary(ProductSearchProperty.DIETARY.getOperator(productSearchOperator), List.of(value));
+                whereClause = whereClause.orProductDietary(ProductSearchProperty.DIETARY.getOperator(productSearchOperator), ProductSearchProperty.DIETARY.getValue(productSearchOperator, List.of(value)));
             } else {
-                whereClause = whereClause.or(productSearchProperty.getColumnName(productSearchOperator, isJoinedQuery), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, value));
+                whereClause = whereClause.or(productSearchProperty.getColumnName(productSearchOperator, isJoinedQuery), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, List.of(value)));
             }
         }
 
@@ -145,7 +145,7 @@ public class ProductStore {
             ProductSearchOperator productSearchOperator = condition.getOperator();
             ProductSearchProperty productSearchProperty = condition.getProperty();
             String value = condition.getValue();
-            whereClause = whereClause.and(productSearchProperty.getColumnName(productSearchOperator), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, value));
+            whereClause = whereClause.and(productSearchProperty.getColumnName(productSearchOperator), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, List.of(value)));
         }
         return whereClause;
     }
@@ -156,7 +156,7 @@ public class ProductStore {
             ProductSearchOperator productSearchOperator = condition.getOperator();
             ProductSearchProperty productSearchProperty = condition.getProperty();
             String value = condition.getValue();
-            whereClause = whereClause.or(productSearchProperty.getColumnName(productSearchOperator), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, value));
+            whereClause = whereClause.or(productSearchProperty.getColumnName(productSearchOperator), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, List.of(value)));
         }
         return whereClause;
     }
