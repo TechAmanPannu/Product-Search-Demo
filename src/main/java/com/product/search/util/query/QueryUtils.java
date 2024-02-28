@@ -30,9 +30,9 @@ public interface QueryUtils {
 
 
     static String createCondition(String property, String operator, String value) {
-        if(TS_TOQUERY_OPERATORS.contains(operator)) {
-            value = getTSQueryValue(join("&",value.split(" ")));
-        }
+//        if(TS_TOQUERY_OPERATORS.contains(operator)) {
+//            value = getTSQueryValue(join("&",value.split(" ")));
+//        }
         return String.format("%s %s %s ", property, operator, value);
     }
 
@@ -44,9 +44,9 @@ public interface QueryUtils {
         List<String> conditions = new ArrayList<>();
 
         boolean isTSQuery = false;
-        if(TS_TOQUERY_OPERATORS.contains(operator)) {
-            isTSQuery = true;
-        }
+//        if(TS_TOQUERY_OPERATORS.contains(operator)) {
+//            isTSQuery = true;
+//        }
         for (String value : values) {
             if(isTSQuery) {
                 value = getTSQueryValue(join("&", value.split(" ")));

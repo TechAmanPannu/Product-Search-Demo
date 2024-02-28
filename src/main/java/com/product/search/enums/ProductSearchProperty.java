@@ -2,102 +2,78 @@
 package com.product.search.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.product.search.model.ProductSearchOperatorConfiguration;
 
 import java.util.EnumMap;
 import java.util.Map;
+
+import static com.product.search.util.query.QueryUtils.join;
 
 public enum ProductSearchProperty {
 
 
     BRAND_CODE("brandCode", "products", new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "{tableName}.brand_code");
-        put(ProductSearchOperator.CONTAINS, "{tableName}.brand_code");
-    }}, new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "=");
-        put(ProductSearchOperator.CONTAINS, "=");
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("{tname}.brand_code", "=", "'{val}'"));
+        put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("{tname}.brand_code", "=", "'{val}'"));
     }}),
 
-    AH_CODE("ahCode", "products",  new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "{tableName}.ah_code");
-        put(ProductSearchOperator.CONTAINS, "{tableName}.ah_code");
-    }},new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "=");
-        put(ProductSearchOperator.CONTAINS, "=");
+    AH_CODE("ahCode", "products", new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("{tname}.ah_code", "=", "'{val}'"));
+        put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("{tname}.ah_code", "=", "'{val}'"));
     }}),
-    MCH_CODE("mchCode", "products",  new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "{tableName}.mch_code");
-        put(ProductSearchOperator.CONTAINS, "{tableName}.mch_code");
-    }},new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "=");
-        put(ProductSearchOperator.CONTAINS, "=");
+    MCH_CODE("mchCode", "products", new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("{tname}.mch_code", "=", "'{val}'"));
+        put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("{tname}.mch_code", "=", "'{val}'"));
     }}),
 
     PRODUCT_CATEGORY_NAME("productCategoryName", "categories", new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "{tableName}.name ->> 'en'");
-        put(ProductSearchOperator.CONTAINS, "jsonb_to_tsvector('english', {tableName}.name -> CAST('en' AS TEXT), '[\"string\"]')");
-    }}, new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "=");
-        put(ProductSearchOperator.CONTAINS, "@@");
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("{tname}.name ->> 'en'", "=", "'{val}'"));
+        put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("jsonb_to_tsvector('english', {tname}.name -> CAST('en' AS TEXT), '[\"string\"]')", "@@", "to_tsquery('{val}')", false, true));
     }}),
 
 
-    DELIVERY("delivery", "products",  new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "LOWER({tableName}.enrichment -> 'specifications' -> 'en' ->> 'delivery')");
-        put(ProductSearchOperator.CONTAINS, "jsonb_to_tsvector('english', {tableName}.enrichment ->  CAST('specifications' AS TEXT) -> CAST('en' AS TEXT) -> CAST('delivery' AS TEXT), '[\"string\"]')");
-    }},new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "=");
-        put(ProductSearchOperator.CONTAINS, "@@");
-    }}, true),
+    DELIVERY("delivery", "products", new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("LOWER({tname}.enrichment -> 'specifications' -> 'en' ->> 'delivery')", "=", "'{val}'", true));
+        put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("jsonb_to_tsvector('english', {tname}.enrichment ->  CAST('specifications' AS TEXT) -> CAST('en' AS TEXT) -> CAST('delivery' AS TEXT), '[\"string\"]')", "@@", "to_tsquery('{val}')", false, true));
+    }}),
 
 
-    SKIN_CONCERN("skinConcern", "products",  new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "LOWER({tableName}.enrichment -> 'specifications' -> 'code' ->> 'concern')");
-        put(ProductSearchOperator.CONTAINS, "jsonb_to_tsvector('english', {tableName}.enrichment ->  CAST('specifications' AS TEXT) -> CAST('code' AS TEXT) -> CAST('concern' AS TEXT), '[\"string\"]')");
-    }},new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "=");
-        put(ProductSearchOperator.CONTAINS, "@@");
-    }}, true),
+    SKIN_CONCERN("skinConcern", "products", new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("LOWER({tname}.enrichment -> 'specifications' -> 'code' ->> 'concern')", "=", "'{val}'", true));
+        put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("jsonb_to_tsvector('english', {tname}.enrichment ->  CAST('specifications' AS TEXT) -> CAST('code' AS TEXT) -> CAST('concern' AS TEXT), '[\"string\"]')", "@@", "to_tsquery('{val}')", false, true));
+    }}),
 
 
-    PRODUCT_COLOR("productColor", "products",  new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "LOWER({tableName}.variant_data -> 'color' ->> 'en')");
-        put(ProductSearchOperator.CONTAINS, "jsonb_to_tsvector('english', {tableName}.variant_data -> CAST('color' AS TEXT) -> CAST('en' AS TEXT), '[\"string\"]')");
-    }},new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "=");
-        put(ProductSearchOperator.CONTAINS, "@@");
-    }}, true),
+    PRODUCT_COLOR("productColor", "products", new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("LOWER({tname}.variant_data -> 'color' ->> 'en')", "=", "'{val}'", true));
+        put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("jsonb_to_tsvector('english', {tname}.variant_data -> CAST('color' AS TEXT) -> CAST('en' AS TEXT), '[\"string\"]')", "@@", "to_tsquery('{val}')", false, true));
+    }}),
+
+    LIAM("liam", "products", new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("{tname}.liam", "=", "'{val}'"));
+        put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("{tname}.liam", "LIKE", "'%{val}%'"));
+    }}),
 
 
-//    Search query is using only operator mapping from dietary configuration, others are  statically defined in the SubQueryBuilder,
+    //    Search query is using only operator mapping from dietary configuration, others are  statically defined in the SubQueryBuilder,
 //    It was done after seeing the complexity of the query required.
-    DIETARY("dietary", "products",  new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "{tableName}.enrichment -> 'dietary_callouts'");
-        put(ProductSearchOperator.CONTAINS, "{tableName}.enrichment -> 'dietary_callouts'");
-    }},new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, "@@");
-        put(ProductSearchOperator.CONTAINS, "@@");
+    DIETARY("dietary", "products", new EnumMap<>(ProductSearchOperator.class) {{
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("@@"));
+        put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("@@"));
     }});
 
 
     private String value;
     private String tableName;
-    private Map<ProductSearchOperator, String> searchOperatorMappings;
-    private Map<ProductSearchOperator, String> searchOperatorsColumnMappings;
-    private boolean lowerIndexCreated;
+    private Map<ProductSearchOperator, ProductSearchOperatorConfiguration> operatorConfigurations;
 
-
-    ProductSearchProperty(String value, String tableName, Map<ProductSearchOperator, String> searchOperatorsColumnMappings, Map<ProductSearchOperator, String> searchOperatorMappings) {
-        this(value, tableName, searchOperatorsColumnMappings,searchOperatorMappings, false);
-
-    }
-    ProductSearchProperty(String value, String tableName, Map<ProductSearchOperator, String> searchOperatorsColumnMappings, Map<ProductSearchOperator, String> searchOperatorMappings, boolean lowerIndexCreated) {
+    ProductSearchProperty(String value, String tableName, Map<ProductSearchOperator, ProductSearchOperatorConfiguration> operatorConfigurations) {
         this.value = value;
         this.tableName = tableName;
-        this.searchOperatorsColumnMappings = searchOperatorsColumnMappings;
-        this.searchOperatorMappings = searchOperatorMappings;
-        this.lowerIndexCreated = lowerIndexCreated;
+        this.operatorConfigurations = operatorConfigurations;
 
     }
+
 
     @JsonCreator
     public static ProductSearchProperty from(String value) {
@@ -114,11 +90,11 @@ public enum ProductSearchProperty {
 
 
     public String getColumnName(ProductSearchOperator operator, boolean isJoinQuery) {
-        String column = this.searchOperatorsColumnMappings.get(operator);
+        ProductSearchOperatorConfiguration configuration = this.operatorConfigurations.get(operator);
         if (isJoinQuery) {
-          return column.replaceFirst("\\{tableName}", this.tableName);
+            return configuration.getColumnExpression().replaceFirst("\\{tname}", this.tableName);
         } else {
-            return column.replaceFirst("\\{tableName}.", "");
+            return configuration.getColumnExpression().replaceFirst("\\{tname}.", "");
         }
     }
 
@@ -127,11 +103,27 @@ public enum ProductSearchProperty {
     }
 
     public String getOperator(ProductSearchOperator productSearchOperator) {
-        return this.searchOperatorMappings.get(productSearchOperator);
+        return this.operatorConfigurations.get(productSearchOperator).getOperator();
     }
 
-    public boolean isLowerIndexCreated() {
-        return this.lowerIndexCreated;
+    public boolean isLowerIndexCreated(ProductSearchOperator productSearchOperator) {
+        return this.operatorConfigurations.get(productSearchOperator).isLowerIndex();
+    }
+
+    public String getValue(ProductSearchOperator searchOperator, String requestedValue) {
+        ProductSearchOperatorConfiguration productSearchOperator = this.operatorConfigurations.get(searchOperator);
+        String valueExpression = productSearchOperator.getValueExpression();
+        if (valueExpression == null || valueExpression.isEmpty()) {
+            return requestedValue;
+        }
+
+        if (productSearchOperator.isLowerIndex()) {
+            requestedValue = requestedValue.toLowerCase();
+        }
+        if (productSearchOperator.isTsQuery()) {
+            requestedValue = join("&", requestedValue.split(" "));
+        }
+        return valueExpression.replaceFirst("\\{val}", requestedValue);
     }
 }
 

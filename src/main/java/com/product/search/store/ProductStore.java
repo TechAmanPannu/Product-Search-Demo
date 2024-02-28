@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static com.product.search.util.query.QueryUtils.singleQuote;
 
 
 @RequiredArgsConstructor
@@ -131,11 +130,13 @@ public class ProductStore {
     private SubqueryWhereClause getAllConditionsMatched(SubqueryWhereClause whereClause, List<ProductSearchCondition> conditions, boolean isJoinQuery) {
         for (int i = 0; i < conditions.size(); i++) {
             ProductSearchCondition condition = conditions.get(i);
-            String value = condition.getProperty().isLowerIndexCreated() ? condition.getValue().toLowerCase() : condition.getValue();
-            if (condition.getProperty() == ProductSearchProperty.DIETARY) {
-                whereClause = whereClause.andProductDietary(ProductSearchProperty.DIETARY.getOperator(condition.getOperator()), List.of(value));
+            ProductSearchOperator productSearchOperator = condition.getOperator();
+            ProductSearchProperty productSearchProperty = condition.getProperty();
+            String value = condition.getValue();
+            if (productSearchProperty == ProductSearchProperty.DIETARY) {
+                whereClause = whereClause.andProductDietary(productSearchProperty.DIETARY.getOperator(productSearchOperator), List.of(value));
             } else {
-                whereClause = whereClause.and(condition.getProperty().getColumnName(condition.getOperator(), isJoinQuery), condition.getProperty().getOperator(condition.getOperator()), singleQuote(value));
+                whereClause = whereClause.and(productSearchProperty.getColumnName(productSearchOperator, isJoinQuery), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, value));
             }
         }
         return whereClause;
@@ -144,11 +145,13 @@ public class ProductStore {
     private SubqueryWhereClause getAllConditionsNonMatched(SubqueryWhereClause whereClause, List<ProductSearchCondition> conditions, boolean isJoinedQuery) {
         for (int i = 0; i < conditions.size(); i++) {
             ProductSearchCondition condition = conditions.get(i);
-            String value = condition.getProperty().isLowerIndexCreated() ? condition.getValue().toLowerCase() : condition.getValue();
-            if (condition.getProperty() == ProductSearchProperty.DIETARY) {
-                whereClause = whereClause.orProductDietary(ProductSearchProperty.DIETARY.getOperator(condition.getOperator()), List.of(value));
+            ProductSearchOperator productSearchOperator = condition.getOperator();
+            ProductSearchProperty productSearchProperty = condition.getProperty();
+            String value = condition.getValue();
+            if (productSearchProperty == ProductSearchProperty.DIETARY) {
+                whereClause = whereClause.orProductDietary(ProductSearchProperty.DIETARY.getOperator(productSearchOperator), List.of(value));
             } else {
-                whereClause = whereClause.or(condition.getProperty().getColumnName(condition.getOperator(), isJoinedQuery), condition.getProperty().getOperator(condition.getOperator()), singleQuote(value));
+                whereClause = whereClause.or(productSearchProperty.getColumnName(productSearchOperator, isJoinedQuery), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, value));
             }
         }
 
@@ -158,8 +161,10 @@ public class ProductStore {
     private WhereClause getAllConditionsMatched(WhereClause whereClause, List<ProductSearchCondition> conditions) {
         for (int i = 0; i < conditions.size(); i++) {
             ProductSearchCondition condition = conditions.get(i);
-            String value = condition.getProperty().isLowerIndexCreated() ? condition.getValue().toLowerCase() : condition.getValue();
-            whereClause = whereClause.and(condition.getProperty().getColumnName(condition.getOperator()), condition.getProperty().getOperator(condition.getOperator()), singleQuote(value));
+            ProductSearchOperator productSearchOperator = condition.getOperator();
+            ProductSearchProperty productSearchProperty = condition.getProperty();
+            String value = condition.getValue();
+            whereClause = whereClause.and(productSearchProperty.getColumnName(productSearchOperator), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, value));
         }
         return whereClause;
     }
@@ -167,8 +172,10 @@ public class ProductStore {
     private WhereClause getAllConditionsNonMatched(WhereClause whereClause, List<ProductSearchCondition> conditions) {
         for (int i = 0; i < conditions.size(); i++) {
             ProductSearchCondition condition = conditions.get(i);
-            String value = condition.getProperty().isLowerIndexCreated() ? condition.getValue().toLowerCase() : condition.getValue();
-            whereClause = whereClause.or(condition.getProperty().getColumnName(condition.getOperator()), condition.getProperty().getOperator(condition.getOperator()), singleQuote(value));
+            ProductSearchOperator productSearchOperator = condition.getOperator();
+            ProductSearchProperty productSearchProperty = condition.getProperty();
+            String value = condition.getValue();
+            whereClause = whereClause.or(productSearchProperty.getColumnName(productSearchOperator), productSearchProperty.getOperator(productSearchOperator), productSearchProperty.getValue(productSearchOperator, value));
         }
         return whereClause;
     }

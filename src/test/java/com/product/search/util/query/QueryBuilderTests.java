@@ -527,7 +527,8 @@ public class QueryBuilderTests {
 
     @Test
     void test() {
-        System.out.println(QueryUtils.createOrDietaryCondition("@@", List.of("peanut", "butter"), false));
+
+        Assertions.assertEquals("%aman%", "%{value}%".replaceFirst("\\{value}", "aman"));
     }
 
 
