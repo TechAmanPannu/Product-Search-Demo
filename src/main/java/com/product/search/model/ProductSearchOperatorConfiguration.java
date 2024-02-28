@@ -8,11 +8,11 @@ import lombok.Getter;
 public class ProductSearchOperatorConfiguration {
 
     private String columnExpression;
-    private String operator;
+    private final String operator;
     private String valueExpression;
     private boolean lowerIndex;
     private boolean tsQuery;
-    private ProductSearchQueryType requiredQueryType;
+    private final ProductSearchQueryType requiredQueryType;
 
     public ProductSearchOperatorConfiguration(String operator, ProductSearchQueryType requiredQueryType) {
         this.operator = operator;
@@ -21,11 +21,6 @@ public class ProductSearchOperatorConfiguration {
     public ProductSearchOperatorConfiguration(String columnExpression, String operator, ProductSearchQueryType requiredQueryType) {
         this(operator, requiredQueryType);
         this.columnExpression = columnExpression;
-    }
-
-    public ProductSearchOperatorConfiguration(String column, String operator, boolean lowerIndex, ProductSearchQueryType requiredQueryType) {
-        this(column, operator, requiredQueryType);
-        this.lowerIndex = lowerIndex;
     }
 
     public ProductSearchOperatorConfiguration(String column, String operator, String valueExpression, ProductSearchQueryType requiredQueryType) {
