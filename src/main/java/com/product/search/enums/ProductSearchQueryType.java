@@ -10,19 +10,18 @@ public enum ProductSearchQueryType {
 
     JOIN_QUERY(1);
 
-    private int priority;
+    private int rank;
 
-    ProductSearchQueryType(int priority) {
-        this.priority = priority;
+    ProductSearchQueryType(int rank) {
+        this.rank = rank;
     }
 
     public  int getPriority() {
-        return this.priority;
+        return this.rank;
     }
 
 
-    public static ProductSearchQueryType findHighPriorityQueryType(List<ProductSearchQueryType> queryTypes) {
-        System.out.println(queryTypes);
+    public static ProductSearchQueryType findTopRankedQueryType(List<ProductSearchQueryType> queryTypes) {
         return queryTypes.stream()
                 .filter(Objects::nonNull)
                 .sorted(Comparator.comparing(ProductSearchQueryType::getPriority))

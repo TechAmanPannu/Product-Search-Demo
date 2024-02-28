@@ -137,7 +137,7 @@ public enum ProductSearchProperty {
             eligibleQueryTypes.add(productSearchCondition.getProperty().getRequiredQueryType(productSearchCondition.getOperator()));
         }
 
-        return ProductSearchQueryType.findHighPriorityQueryType(new ArrayList<>(eligibleQueryTypes));
+        return ProductSearchQueryType.findTopRankedQueryType(new ArrayList<>(eligibleQueryTypes));
 
     }
 
