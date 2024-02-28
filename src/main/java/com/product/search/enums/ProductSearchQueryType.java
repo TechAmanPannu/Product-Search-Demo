@@ -21,9 +21,9 @@ public enum ProductSearchQueryType {
     }
 
 
-    public static ProductSearchQueryType findHighPriorityQueryType(ProductSearchQueryType... queryTypes) {
-
-        return Arrays.asList(queryTypes).stream()
+    public static ProductSearchQueryType findHighPriorityQueryType(List<ProductSearchQueryType> queryTypes) {
+        System.out.println(queryTypes);
+        return queryTypes.stream()
                 .filter(Objects::nonNull)
                 .sorted(Comparator.comparing(ProductSearchQueryType::getPriority))
                 .findFirst().orElse(ProductSearchQueryType.BASIC_QUERY);

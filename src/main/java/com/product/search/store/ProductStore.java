@@ -65,7 +65,7 @@ public class ProductStore {
 
     private String getSearchQuery(ProductSearchRequest productSearchRequest, Integer limit, String nextPageCursor) {
         QueryBuilder queryBuilder = new QueryBuilder(PRODUCT_TABLE_NAME, QUERY_COLUMNS);
-        ProductSearchQueryType queryType = getQueryType(productSearchRequest);
+        ProductSearchQueryType queryType = ProductSearchProperty.getSearchQueryType(productSearchRequest.getConditions());
         System.out.println("QueryType : "+queryType);
         switch (queryType) {
             case JOIN_QUERY:
@@ -75,25 +75,6 @@ public class ProductStore {
             default:
                 return getBasicQuery(productSearchRequest, limit, nextPageCursor, queryBuilder);
         }
-    }
-
-    private ProductSearchQueryType getQueryType(ProductSearchRequest productSearchRequest) {
-
-        ProductSearchQueryType queryTypeJoin  = null;
-        ProductSearchQueryType queryTypeSub  = null;
-        for (ProductSearchCondition condition : productSearchRequest.getConditions()) {
-            if (condition.getProperty() == ProductSearchProperty.PRODUCT_CATEGORY_NAME) {
-                queryTypeJoin =  ProductSearchQueryType.JOIN_QUERY;
-            }
-
-            if (condition.getProperty() == ProductSearchProperty.DIETARY || condition.getProperty() == ProductSearchProperty.SKIN_CONCERN
-                    || (condition.getProperty() == ProductSearchProperty.PRODUCT_COLOR && condition.getOperator() == ProductSearchOperator.CONTAINS)
-            || condition.getProperty() == ProductSearchProperty.DELIVERY ) {
-                queryTypeSub =  ProductSearchQueryType.SUB_QUERY;
-            }
-        }
-
-         return ProductSearchQueryType.findHighPriorityQueryType(queryTypeJoin, queryTypeSub, ProductSearchQueryType.BASIC_QUERY);
     }
 
     private String getJoinQuery(ProductSearchRequest productSearchRequest, Integer limit, String nextPageCursor, QueryBuilder queryBuilder) {
