@@ -13,34 +13,36 @@ public class ProductSearchOperatorConfiguration {
     private boolean lowerIndex;
     private boolean tsQuery;
     private final ProductSearchQueryType requiredQueryType;
+    private int orderPriority;
 
-    public ProductSearchOperatorConfiguration(String operator, ProductSearchQueryType requiredQueryType) {
+    public ProductSearchOperatorConfiguration(String operator, ProductSearchQueryType requiredQueryType, int orderPriority) {
         this.operator = operator;
         this.requiredQueryType = requiredQueryType;
+        this.orderPriority = orderPriority;
     }
 
-    public ProductSearchOperatorConfiguration(String operator, boolean lowerIndex, boolean tsQuery, ProductSearchQueryType requiredQueryType) {
-        this( operator, requiredQueryType);
+    public ProductSearchOperatorConfiguration(String operator, boolean lowerIndex, boolean tsQuery, ProductSearchQueryType requiredQueryType, int orderPriority) {
+        this( operator, requiredQueryType, orderPriority);
         this.lowerIndex = lowerIndex;
         this.tsQuery = tsQuery;
     }
 
-    public ProductSearchOperatorConfiguration(String columnExpression, String operator, ProductSearchQueryType requiredQueryType) {
-        this(operator, requiredQueryType);
+    public ProductSearchOperatorConfiguration(String columnExpression, String operator, ProductSearchQueryType requiredQueryType, int orderPriority) {
+        this(operator, requiredQueryType, orderPriority);
         this.columnExpression = columnExpression;
     }
 
-    public ProductSearchOperatorConfiguration(String column, String operator, String valueExpression, ProductSearchQueryType requiredQueryType) {
-        this(column, operator, requiredQueryType);
+    public ProductSearchOperatorConfiguration(String column, String operator, String valueExpression, ProductSearchQueryType requiredQueryType, int orderPriority) {
+        this(column, operator, requiredQueryType, orderPriority);
         this.valueExpression = valueExpression;
     }
 
-    public ProductSearchOperatorConfiguration(String column, String operator, String valueExpression, boolean lowerIndex, ProductSearchQueryType requiredQueryType) {
-        this(column, operator, valueExpression, requiredQueryType);
+    public ProductSearchOperatorConfiguration(String column, String operator, String valueExpression, boolean lowerIndex, ProductSearchQueryType requiredQueryType, int orderPriority) {
+        this(column, operator, valueExpression, requiredQueryType, orderPriority);
         this.lowerIndex = lowerIndex;
     }
-    public ProductSearchOperatorConfiguration(String column, String operator, String valueExpression, boolean lowerIndex, boolean tsQuery, ProductSearchQueryType requiredQueryType) {
-        this(column, operator, valueExpression, lowerIndex, requiredQueryType);
+    public ProductSearchOperatorConfiguration(String column, String operator, String valueExpression, boolean lowerIndex, boolean tsQuery, ProductSearchQueryType requiredQueryType, int orderPriority) {
+        this(column, operator, valueExpression, lowerIndex, requiredQueryType, orderPriority);
         this.tsQuery = tsQuery;
     }
 

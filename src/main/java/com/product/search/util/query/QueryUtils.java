@@ -27,14 +27,8 @@ public interface QueryUtils {
     }
 
 
-
-
     static String createCondition(String property, String operator, String value) {
         return String.format("%s %s %s ", property, operator, value);
-    }
-
-    static String getTSQueryValue(String value) {
-        return String.format("to_tsquery(%s)", value);
     }
 
     static String createOrCondition(String property, String operator, List<String> values) {
