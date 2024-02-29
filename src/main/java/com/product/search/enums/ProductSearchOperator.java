@@ -14,7 +14,7 @@ public enum ProductSearchOperator {
     }
 
     @JsonCreator
-    public ProductSearchOperator from(String value) {
+    public static ProductSearchOperator from(String value) {
          if(value == null || value.isEmpty()) {
              return null;
          }
