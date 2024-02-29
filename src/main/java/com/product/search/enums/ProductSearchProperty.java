@@ -22,28 +22,26 @@ public enum ProductSearchProperty {
         put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("{tname}.ah_code", "=", "'{val}'", ProductSearchQueryType.BASIC_QUERY, 1));
         put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("{tname}.ah_code", "=", "'{val}'", ProductSearchQueryType.BASIC_QUERY, 1));
     }}),
+
     MCH_CODE("mchCode", "products", new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("{tname}.mch_code", "=", "'{val}'", ProductSearchQueryType.BASIC_QUERY, 1));
         put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("{tname}.mch_code", "=", "'{val}'", ProductSearchQueryType.BASIC_QUERY, 1));
     }}),
 
     PRODUCT_CATEGORY_NAME("productCategoryName", "categories", new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("{tname}.name ->> 'en'", "=", "'{val}'", ProductSearchQueryType.JOIN_QUERY, 3));
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("LOWER(name ->> 'en')", "=", "'{val}'", ProductSearchQueryType.JOIN_QUERY, 3));
         put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("jsonb_to_tsvector('english', {tname}.name -> CAST('en' AS TEXT), '[\"string\"]')", "@@", "to_tsquery('{val}')", false, true, ProductSearchQueryType.JOIN_QUERY, 3));
     }}),
-
 
     DELIVERY("delivery", "products", new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("LOWER({tname}.enrichment -> 'specifications' -> 'en' ->> 'delivery')", "=", "'{val}'", true, ProductSearchQueryType.SUB_QUERY, 2));
         put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("jsonb_to_tsvector('english', {tname}.enrichment ->  CAST('specifications' AS TEXT) -> CAST('en' AS TEXT) -> CAST('delivery' AS TEXT), '[\"string\"]')", "@@", "to_tsquery('{val}')", false, true, ProductSearchQueryType.SUB_QUERY, 2));
     }}),
 
-
     SKIN_CONCERN("skinConcern", "products", new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("LOWER({tname}.enrichment -> 'specifications' -> 'code' ->> 'concern')", "=", "'{val}'", true, ProductSearchQueryType.SUB_QUERY, 2));
         put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfiguration("jsonb_to_tsvector('english', {tname}.enrichment ->  CAST('specifications' AS TEXT) -> CAST('code' AS TEXT) -> CAST('concern' AS TEXT), '[\"string\"]')", "@@", "to_tsquery('{val}')", false, true, ProductSearchQueryType.SUB_QUERY, 2));
     }}),
-
 
     PRODUCT_COLOR("productColor", "products", new EnumMap<>(ProductSearchOperator.class) {{
         put(ProductSearchOperator.EQ, new ProductSearchOperatorConfiguration("LOWER({tname}.variant_data -> 'color' ->> 'en')", "=", "'{val}'", true, ProductSearchQueryType.BASIC_QUERY, 1));
