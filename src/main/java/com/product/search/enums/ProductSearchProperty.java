@@ -29,7 +29,7 @@ public enum ProductSearchProperty {
     }}),
 
     PRODUCT_CATEGORY_NAME("productCategoryName", "categories", new EnumMap<>(ProductSearchOperator.class) {{
-        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfigModel("LOWER({tname}.name ->> 'en')", "=", "'{val}'", ProductSearchQueryType.JOIN_QUERY, 3));
+        put(ProductSearchOperator.EQ, new ProductSearchOperatorConfigModel("LOWER({tname}.name ->> 'en')", "=", "'{val}'", true, ProductSearchQueryType.JOIN_QUERY, 3));
         put(ProductSearchOperator.CONTAINS, new ProductSearchOperatorConfigModel("jsonb_to_tsvector('english', {tname}.name -> CAST('en' AS TEXT), '[\"string\"]')", "@@", "to_tsquery('{val}')", false, true, ProductSearchQueryType.JOIN_QUERY, 3));
     }}),
 
