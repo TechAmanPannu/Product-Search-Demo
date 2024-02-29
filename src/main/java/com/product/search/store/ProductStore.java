@@ -58,7 +58,6 @@ public class ProductStore {
             System.out.println("SEARCH QUERY : "+searchQuery);
             return entityManager.createNativeQuery(searchQuery, Product.class).getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
             return List.of();
         }
     }
