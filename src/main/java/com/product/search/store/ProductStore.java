@@ -11,10 +11,11 @@ import com.product.search.util.ProductSpecifications;
 import com.product.search.util.query.QueryBuilder;
 import com.product.search.util.query.SubqueryWhereClause;
 import com.product.search.util.query.WhereClause;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
+
 import java.util.List;
 
 

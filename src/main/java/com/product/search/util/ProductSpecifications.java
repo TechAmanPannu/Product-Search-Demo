@@ -3,9 +3,6 @@ package com.product.search.util;
 import com.product.search.entity.Product;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Subquery;
 
 public interface ProductSpecifications {
 

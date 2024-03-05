@@ -1,9 +1,9 @@
 package com.product.search.entity;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 @NoArgsConstructor
